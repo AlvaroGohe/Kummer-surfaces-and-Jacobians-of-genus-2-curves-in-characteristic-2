@@ -425,10 +425,16 @@ function WeddleSurface(J) // Given the Jacobian of a genus 2 curve, this compute
  return S;
 end function;
 
-// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers
+// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers. For some reason that I don't fully understand, the two procedures that
 
-function Tjurina(pt) // This function computes the Tjurina number of a singular point of a variety
+function TjurinaP3(pt) // This function computes the Tjurina number of a singular point of a variety in P3
 boo,F,seq,dat := IsHypersurfaceSingularity(pt,3);
 n := TjurinaNumber(F);
+return n;
+end function;
+
+function TjurinaP5(pt) // This function computes the Tjurina number of a singular point of a variety in P5
+boo,F,seq,dat := IsHypersurfaceSingularity(pt,3);
+n := TjurinaNumberAnalyticHypersurface(dat);
 return n;
 end function;
