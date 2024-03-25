@@ -30,10 +30,10 @@ ptsJacSS := [Gamma(JacSS,pt): pt in ptsJSS];
 P3SS<k1,k2,k3,k4> := Ambient(KumSS);
 P15SS<v1, v2, v3, v4, v5, v6, k11, k12, k13, k14, k22, k23, k24, k33, k34, k44> := Ambient(JacSS);
 
-QAO<r> := GF(4);
+QAO<r> := GF(8);
 PolQAO<x> := PolynomialRing(QAO);
 fAO := x^6+x^5+r*x+1;
-gAO := x^2*(x+1);
+gAO := (x+r)^2*(x+r^2);
 CAO := HyperellipticCurve(fAO,gAO);
 JAO := Jacobian(CAO);
 KumAO := GeneralKummerSurface(JAO);
