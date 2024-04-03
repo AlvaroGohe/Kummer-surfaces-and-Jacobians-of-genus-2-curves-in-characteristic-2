@@ -38,6 +38,7 @@ CAO := HyperellipticCurve(fAO,gAO);
 JAO := Jacobian(CAO);
 KumAO := GeneralKummerSurface(JAO);
 JacAO := GeneralJacobianSurface(JAO);
+DesAO := DesingularisedKummer(JAO);
 ptsJAO := Points(JAO);
 ptsKumAO := [Kappa(KumAO,pt): pt in ptsJAO];
 ptsJacAO := [Gamma(JacAO,pt): pt in ptsJAO];
