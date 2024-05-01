@@ -488,7 +488,7 @@ function LinesNotCharacteristic2(J,Des0)
  return [EO,E12,E13,E14,E15,E16,E23,E24,E25,E26,E34,E35,E36,E45,E46,E56], [T1, T2, T3, T4, T5, T6, T123, T124, T125, T126, T134, T135, T136, T145, T146, T156], Des;
  end function;
 
-function LinesOrdinary(J,Des0)
+function LinesOrdinary(J, Des0)
  C0 := Curve(J);
  k := BaseRing(C0);
  f0,g0 := HyperellipticPolynomials(C0);
@@ -528,7 +528,7 @@ function LinesOrdinary(J,Des0)
  return [EO,E12,E13,E23], [T1,T2,T3,T123], plane, Des;
  end function;
 
-function LinesAlmostOrdinary(J,Des)
+function LinesAlmostOrdinary(J, Des)
  C := Curve(J);
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
@@ -642,6 +642,49 @@ phi := map<Des->Wed | [b1,b2,b3,b4]>;
 return phi;
 end function;
 
+function BlowupEO(Des)
+ K := BaseRing(Des);
+ ProdProj<b1, b2, b3, b4, b5, b6, w1, w2, w3, w4> := ProductProjectiveSpace(K, [5,3]);
+ P5<b1, b2, b3, b4, b5, b6> := AmbientSpace(Des); 
+ phi := map<Des->ProdProj | [b1, b2, b3, b4, b5, b6, b1, b2, b3, b4]>;
+ S := Image(phi);
+ newphi := map<Des->S | [b1, b2, b3, b4, b5, b6, b1, b2, b3, b4]>;
+ return S, newphi;
+end function;
+
+// Warning, the following function takes a long time! 15 minutes in Warwick's
+function DesingularisedOrdinaryKummer(J, Des0)
+ C0 := Curve(J);
+ k := BaseRing(C0);
+ f0,g0 := HyperellipticPolynomials(C0);
+ K := SplittingField(g0);
+ C := BaseExtend(C0,K);
+ f,g := HyperellipticPolynomials(C);
+ Des := BaseExtend(Des0,K);
+ P5<b1, b2, b3, b4, b5, b6> := AmbientSpace(Des); 
+ f0 := Coefficient(f,0);
+ f1 := Coefficient(f,1);
+ f2 := Coefficient(f,2);
+ f3 := Coefficient(f,3);
+ f4 := Coefficient(f,4);  
+ f5 := Coefficient(f,5);
+ f6 := Coefficient(f,6);
+ g0 := Coefficient(g,0);
+ g1 := Coefficient(g,1);
+ g2 := Coefficient(g,2);
+ g3 := Coefficient(g,3);
+ a1 := Roots(g)[1,1];
+ a2 := Roots(g)[2,1];
+ a3 := Roots(g)[3,1];
+ y1 := Sqrt(Evaluate(f,a1));
+ y2 := Sqrt(Evaluate(f,a2));
+ y3 := Sqrt(Evaluate(f,a3));
+ ProdProj := ProductProjectiveSpace(K, [5,3,3,3,3]);
+ eqs := [b1, b2, b3, b4, b5, b6, b1, b2, b3, b4, a1*a2*b1 + (a1 + a2)*b2 + b3, (a1 + a2)^2*b4 + b3*(y1 + y2) + b1*(a2^2*y1 + a1^2*y2),  (a1 + a2)*b5 + b3*(f3 + a1^2*f5 + a2^2*f5 + a1^3*g3^2 + a2^3*g3^2 + a1^2*a3*g3^2 + a1*a2*a3*g3^2 + a2^2*a3*g3^2 + g3*y1 + g3*y2) +   b1*(f1 + a1^2*a2^2*f5 + a1^3*a2^2*g3^2 + a1^2*a2^3*g3^2 + a1^2*a2^2*a3*g3^2 + a2^2*g3*y1 + a1^2*g3*y2),  (a1 + a2)^2*b6 + b3*g3^2*(f1 + a1*a2*f3 + a1^3*a2*f5 + a1^2*a2^2*f5 + a1*a2^3*f5 + a1^4*a2*g3^2 + a1*a2^4*g3^2 + a1^4*a3*g3^2 + a2^4*a3*g3^2 + a1^2*a2*a3^2*g3^2 + a1*a2^2*a3^2*g3^2 + a1^2*g3*y1 + a1*a2*g3*y1 + a2^2*g3*y1 + a3^2*g3*y1 + a1^2*g3*y2 + a1*a2*g3*y2 + a2^2*g3*y2 + a3^2*g3*y2) +   b1*g3^2*(a1^2*f1 + a1*a2*f1 + a2^2*f1 + a1^2*a2^2*f3 + a1^3*a2^3*f5 + a1^4*a2^3*g3^2 + a1^3*a2^4*g3^2 + a1^3*a2^2*a3^2*g3^2 + a1^2*a2^3*a3^2*g3^2 + a1^2*a2^2*g3*y1 + a1*a2^3*g3*y1 + a2^4*g3*y1 + a2^2*a3^2*g3*y1 + a1^4*g3*y2 + a1^3*a2*g3*y2 + a1^2*a2^2*g3*y2 + a1^2*a3^2*g3*y2), a1*a3*b1 + (a1 + a3)*b2 + b3, (a1 + a3)^2*b4 + b3*(y1 + y3) + b1*(a3^2*y1 + a1^2*y3),  (a1 + a3)*b5 + b3*(f3 + a1^2*f5 + a3^2*f5 + a1^3*g3^2 + a1^2*a2*g3^2 + a1*a2*a3*g3^2 + a2*a3^2*g3^2 + a3^3*g3^2 + g3*y1 + g3*y3) +   b1*(f1 + a1^2*a3^2*f5 + a1^3*a3^2*g3^2 + a1^2*a2*a3^2*g3^2 + a1^2*a3^3*g3^2 + a3^2*g3*y1 + a1^2*g3*y3),  (a1 + a3)^2*b6 + b3*g3^2*(f1 + a1*a3*f3 + a1^3*a3*f5 + a1^2*a3^2*f5 + a1*a3^3*f5 + a1^4*a2*g3^2 + a1^4*a3*g3^2 + a1^2*a2^2*a3*g3^2 + a1*a2^2*a3^2*g3^2 + a1*a3^4*g3^2 +     a2*a3^4*g3^2 + a1^2*g3*y1 + a2^2*g3*y1 + a1*a3*g3*y1 + a3^2*g3*y1 + a1^2*g3*y3 + a2^2*g3*y3 + a1*a3*g3*y3 + a3^2*g3*y3) +   b1*g3^2*(a1^2*f1 + a1*a3*f1 + a3^2*f1 + a1^2*a3^2*f3 + a1^3*a3^3*f5 + a1^3*a2^2*a3^2*g3^2 + a1^4*a3^3*g3^2 + a1^2*a2^2*a3^3*g3^2 + a1^3*a3^4*g3^2 + a1^2*a3^2*g3*y1 +     a2^2*a3^2*g3*y1 + a1*a3^3*g3*y1 + a3^4*g3*y1 + a1^4*g3*y3 + a1^2*a2^2*g3*y3 + a1^3*a3*g3*y3 + a1^2*a3^2*g3*y3), a2*a3*b1 + (a2 + a3)*b2 + b3, (a2 + a3)^2*b4 + b3*(y2 + y3) + b1*(a3^2*y2 + a2^2*y3),  (a2 + a3)*b5 + b3*(f3 + a2^2*f5 + a3^2*f5 + a1*a2^2*g3^2 +  a2^3*g3^2 + a1*a2*a3*g3^2 + a1*a3^2*g3^2 + a3^3*g3^2 + g3*y2 + g3*y3) +   b1*(f1 + a2^2*a3^2*f5 + a1*a2^2*a3^2*g3^2 + a2^3*a3^2*g3^2 + a2^2*a3^3*g3^2 + a3^2*g3*y2 + a2^2*g3*y3),  (a2 + a3)^2*b6 + b3*g3^2*(f1 + a2*a3*f3 + a2^3*a3*f5 + a2^2*a3^2*f5 + a2*a3^3*f5 + a1*a2^4*g3^2 + a1^2*a2^2*a3*g3^2 + a2^4*a3*g3^2 + a1^2*a2*a3^2*g3^2 + a1*a3^4*g3^2 + a2*a3^4*g3^2 + a1^2*g3*y2 + a2^2*g3*y2 + a2*a3*g3*y2 + a3^2*g3*y2 + a1^2*g3*y3 + a2^2*g3*y3 + a2*a3*g3*y3 + a3^2*g3*y3) +   b1*g3^2*(a2^2*f1 + a2*a3*f1 + a3^2*f1 + a2^2*a3^2*f3 + a2^3*a3^3*f5 + a1^2*a2^3*a3^2*g3^2 + a1^2*a2^2*a3^3*g3^2 + a2^4*a3^3*g3^2 + a2^3*a3^4*g3^2 + a1^2*a3^2*g3*y2   + a2^2*a3^2*g3*y2 + a2*a3^3*g3*y2 + a3^4*g3*y2 + a1^2*a2^2*g3*y3 + a2^4*g3*y3 + a2^3*a3*g3*y3 + a2^2*a3^2*g3*y3)];
+ phi := map<Des->ProdProj | eqs>;
+ S := Image(phi);
+return phi, S;
+end function;
 // In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers. For some reason that I don't fully understand, the two procedures that
 
 function TjurinaP3(pt) // This function computes the Tjurina number of a singular point of a variety in P3
@@ -655,3 +698,4 @@ boo,F,seq,dat := IsHypersurfaceSingularity(pt,3);
 n := TjurinaNumberAnalyticHypersurface(dat);
 return n;
 end function;
+
