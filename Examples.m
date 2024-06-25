@@ -89,9 +89,4 @@ DD := DesingularisedKummer(JDK2);
 
  
 
- PolQ<x> := PolynomialRing(Rationals());
- fD4 := -(-1 + 3*x - (4*x^2)/25 - (117*x^3)/25 + (32*x^4)/25 + (39*x^5)/25 + x^6/100);
- gD4 := x - x^2 - x^3;
- CD4 := HyperellipticCurve(fD4,gD4);
- JD4 := Jacobian(CD4);
  
