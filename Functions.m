@@ -603,8 +603,8 @@ function LinesAlmostOrdinary(J, Des)
  E12 := Scheme(Des,[a1*a2*b1 + a1*b2 + a2*b2 + b3, a1^2*b4 + a2^2*b4 + a2^2*b1*y1 + b3*y1 + a1^2*b1*y2 + b3*y2, a1*b5 + a2*b5 + b1*f1 + b3*f3 + a1^2*a2^2*b1*f5 + a1^2*b3*f5 + a2^2*b3*f5 + a1^3*a2^2*b1*g3^2 + a1^3*b3*g3^2 + a1^2*a2*b3*g3^2 + a1*a2^2*b3*g3^2 + a2^2*b1*g3*y1 + b3*g3*y1 + a1^2*b1*g3*y2 + b3*g3*y2, a1^2*b6 + a2^2*b6 + a1^2*b1*f1*g3^2 + a1*a2*b1*f1*g3^2 + a2^2*b1*f1*g3^2 + b3*f1*g3^2 + a1^2*a2^2*b1*f3*g3^2 + a1*a2*b3*f3*g3^2 + a1^3*a2^3*b1*f5*g3^2 + a1^3*a2*b3*f5*g3^2 + a1^2*a2^2*b3*f5*g3^2 + a1*a2^3*b3*f5*g3^2 + a1^4*a2^3*b1*g3^4 + a1^2*a2^5*b1*g3^4 + a1^2*a2^3*b3*g3^4 + a2^5*b3*g3^4 + a1^2*a2^2*b1*g3^3*y1 + a1*a2^3*b1*g3^3*y1 + a1^2*b3*g3^3*y1 + a1*a2*b3*g3^3*y1 + a1^4*b1*g3^3*y2 + a1^3*a2*b1*g3^3*y2 + a1^2*b3*g3^3*y2 + a1*a2*b3*g3^3*y2]);
  T1 := Scheme(Des,[a1*b1 + b2, a1^2*b1 + b3, b4 + b1*y1, b6 + a1*b5*g3^2 + b1*f1*g3^2 + a1^2*b1*f3*g3^2 + a1^4*b1*f5*g3^2 + a1^5*b1*g3^4]);
  T2 := Scheme(Des,[a2*b1 + b2, a2^2*b1 + b3, b4 + b1*y2, b6 + a2*b5*g3^2 + b1*f1*g3^2 + a2^2*b1*f3*g3^2 + a2^4*b1*f5*g3^2 + a1^2*a2^3*b1*g3^4 + a1*a2^4*b1*g3^4 + a2^5*b1*g3^4 + a1^2*b1*g3^3*y2 + a2^2*b1*g3^3*y2]);
- plane := Scheme(Des,a1^2*a2*b4 + a2^3*b4 + a2^3*b1*y1 + a2^2*b2*y1 + a2*b3*y1 + a1^2*a2*b1*y2 + a1*a2^2*b1*y2 + a1^2*b2*y2 + a2^2*b2*y2 + a1*b3*y2 + a2*b3*y2);
- return [EO,E12], [T1,T2], plane;
+ planes := Scheme(Des, [(a1 + a2)*b4 + b2*(y1 + y2) + b1*(a2*y1 + a1*y2), a1*a2*b1 + (a1 + a2)*b2 + b3]);
+ return [EO,E12], [T1,T2], planes;
  end function;
 
  function LinesSupersingular(J,Des)
@@ -627,7 +627,7 @@ function LinesAlmostOrdinary(J, Des)
  y1 := Sqrt(Evaluate(f,a1));
  EO := Scheme(Des,[b1,b2,b3,b4]);
  T1 := Scheme(Des,[a1*b1 + b2, a1^2*b1 + b3, b4 + b1*y1, b6 + a1*b5*g3^2 + b1*f1*g3^2 + a1^2*b1*f3*g3^2 + a1^4*b1*f5*g3^2 + a1^5*b1*g3^4]);
- plane := Scheme(Des,a1^2*b1 + a1*b2 + b3);
+ plane := Scheme(Des,[b4 + b1*y1, a1*b1 + b2, a1^2*b1 + b3]);
  return [EO], [T1], plane;
  end function;
 
