@@ -1,32 +1,32 @@
 // These are some computations regarding examples of abelian surfaces with everywhere good reduction to check whether there Kummer surfaces acquire good reduction at 2
 
 // The main example of the paper
-Q2 := pAdicField(2,32);
-K<w> := ext<Q2 | Polynomial([-105,-1,1])>;
-K;
+K := pAdicField(2,32);
 PolK<x> := PolynomialRing(K);
-g :=  w*(x^3+1);
-f := -2*(4414*w+43089)*x^6+(31147*w+303963)*x^5-10*(4522*w+44133)*x^4 +2*(17290*w+168687)*x^3-18*(816*w+7967)*x^2 +27*(122*w+1189)*x-(304*w+3003);
+w := Roots(x^2-x-88)[1,1];
+PolK<x> := PolynomialRing(K);
+g := (w + 1)*x^3 + x^2 + w*x + w + 1;
+f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
 pol := 4*f+g^2;
 Factorisation(pol);
 SplittingField(pol);
-K2<s> := ext<K|x^2 - 2*x+2>;
-//K2`SeriesPrinting := true;
+K2<r> := ext<K|(w + 1)*x^3 + x^2 + w*x + w + 1>;
 PolK2<x> := PolynomialRing(K2);
-g :=  w*(x^3+1);
-f := -2*(4414*w+43089)*x^6+(31147*w+303963)*x^5-10*(4522*w+44133)*x^4 +2*(17290*w+168687)*x^3-18*(816*w+7967)*x^2 +27*(122*w+1189)*x-(304*w+3003);
+g := (w + 1)*x^3 + x^2 + w*x + w + 1;
+f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
 pol := 4*f+g^2;
 Factorisation(pol);
 
-// Confirmation that the curve has everywhere good reduction except at 3 (where the Jacobian acquires good reduction)
-K<w> := ext<Rationals() | Polynomial([-105,-1,1])>;
+// Confirmation that the curve has everywhere good reduction
+K<w> := ext<Rationals() | Polynomial([-88,-1,1])>;
 PolK<x> := PolynomialRing(K);
-g :=  w*(x^3+1);
-f := -2*(4414*w+43089)*x^6+(31147*w+303963)*x^5-10*(4522*w+44133)*x^4 +2*(17290*w+168687)*x^3-18*(816*w+7967)*x^2 +27*(122*w+1189)*x-(304*w+3003);
+g := (w + 1)*x^3 + x^2 + w*x + w + 1;
+f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
 Factorisation(4*f+g^2);
 C := HyperellipticCurve(f,g);
 D := Discriminant(C);
-Norm(D); // This is 3^34
+Norm(D);
+
 
 // The first example of the table
 Q2 := pAdicField(2,32);
@@ -126,6 +126,7 @@ C := HyperellipticCurve(f,g);
 D := Discriminant(C);
 Norm(D); // This is 3^34
 
+
 // The fourth example of the table
 K := pAdicField(2,32);
 PolK<x> := PolynomialRing(K);
@@ -193,6 +194,7 @@ C := HyperellipticCurve(f,g);
 D := Discriminant(C);
 Norm(D); 
 
+
 // The sixth example of the table
 K := pAdicField(2,32);
 PolK<x> := PolynomialRing(K);
@@ -226,34 +228,8 @@ C := HyperellipticCurve(f,g);
 D := Discriminant(C);
 Norm(D); // This is 3^44
 
+
 // The seventh example of the table 
-K := pAdicField(2,32);
-PolK<x> := PolynomialRing(K);
-w := Roots(x^2-x-88)[1,1];
-PolK<x> := PolynomialRing(K);
-g := (w + 1)*x^3 + x^2 + w*x + w + 1;
-f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
-pol := 4*f+g^2;
-Factorisation(pol);
-SplittingField(pol);
-K2<r> := ext<K|(w + 1)*x^3 + x^2 + w*x + w + 1>;
-PolK2<x> := PolynomialRing(K2);
-g := (w + 1)*x^3 + x^2 + w*x + w + 1;
-f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
-pol := 4*f+g^2;
-Factorisation(pol);
-
-// Confirmation that the curve has everywhere good reduction
-K<w> := ext<Rationals() | Polynomial([-88,-1,1])>;
-PolK<x> := PolynomialRing(K);
-g := (w + 1)*x^3 + x^2 + w*x + w + 1;
-f := -(15*w + 149)*x^6 - (1119*w + 9948)*x^5 - (36545*w + 325090)*x^4 -(636332*w + 5659370)*x^3 - (6227174*w + 55387985)*x^2 -(32480001*w + 288869715)*x - 70532813*w - 627353458;
-Factorisation(4*f+g^2);
-C := HyperellipticCurve(f,g);
-D := Discriminant(C);
-Norm(D);
-
-// The eighth example of the table 
 K<w> := ext<Q2 | Polynomial([-105,-1,1])>;
 PolK<x> := PolynomialRing(K);
 g :=  w*x^3 + x^2 + (w + 1)*x + w + 1;
@@ -289,7 +265,7 @@ D := Discriminant(C);
 Norm(D); // This is 11^22
 
 
-// The ninth example of the table
+// The eighth example of the table
 Q2 := pAdicField(2,32);
 K<w> := ext<Q2 | Polynomial([-399,-1,1])>;
 PolK<x> := PolynomialRing(K);
@@ -330,12 +306,10 @@ Norm(D);
 // First almost ordinary example
 K := pAdicField(2,32);
 PolK<x> := PolynomialRing(K);
-w := Roots(x^2-x-48)[2,1];
+w := Roots(x^2-x-48)[1,1];
 PolK<x> := PolynomialRing(K);
 g := -x-w;
 f := 2*x^6+(-2*w+7)* x^5+(-5* w+47)* x^4+(-12* w+85)* x^3 +(-13* w+97)* x^2+(-8* w+56)* x-2* w+1;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
 pol := 4*f+g^2;
 Factorisation(pol);
 SplittingField(pol);
@@ -347,8 +321,6 @@ K4<r4> := ext<K3|x^2-x-1>;
 PolK4<x> := PolynomialRing(K4); 
 g := -x-w;
 f := 2*x^6+(-2*w+7)* x^5+(-5* w+47)* x^4+(-12* w+85)* x^3 +(-13* w+97)* x^2+(-8* w+56)* x-2* w+1;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
 pol := 4*f+g^2;
 Factorisation(pol);
 
@@ -366,12 +338,10 @@ Norm(D);
 // Second almost ordinary example
 K := pAdicField(2,32);
 PolK<x> := PolynomialRing(K);
-w := Roots(x^2-x-58)[2,1];
+w := Roots(x^2-x-58)[1,1];
 PolK<x> := PolynomialRing(K);
 g := x+1;
 f := -2*x^6 -(2*w-1)*x^5 -45*x^4 -4*(2*w-1)*x^3 -31*x^2 + (w-1)*x+9;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
 pol := 4*f+g^2;
 Factorisation(pol);
 SplittingField(pol);
@@ -383,8 +353,6 @@ K4<r4> := ext<K3|x^2-x-1>;
 PolK4<x> := PolynomialRing(K4); 
 g := x+1;
 f := -2*x^6 -(2*w-1)*x^5 -45*x^4 -4*(2*w-1)*x^3 -31*x^2 + (w-1)*x+9;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
 pol := 4*f+g^2;
 Factorisation(pol);
 
@@ -408,8 +376,7 @@ j := 20*t-3;
 PolK<x> := PolynomialRing(K);
 g := -x^2;
 f :=-500*j^2 + (1600000 + 243*j^5)*x - 1350000*j^3*x^2 + (320000000*j + 291600*j^6)*x^3 - (1/4 + 48600000*j^4 + (177147*j^9)/4)*x^4 - (86400000000*j^2 - 39366000*j^7)*x^5 + (40960000000000 - 14580000000*j^5 + 531441*j^10)*x^6;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
+
 pol := 4*f+g^2;
 f := Factorisation(pol);
 d :=[Degree(f[n,1]): n in [1..#f]]; 
@@ -425,8 +392,7 @@ j := 20*t-3;
 PolK<x> := PolynomialRing(K);
 g := -x^2;
 f :=-500*j^2 + (1600000 + 243*j^5)*x - 1350000*j^3*x^2 + (320000000*j + 291600*j^6)*x^3 - (1/4 + 48600000*j^4 + (177147*j^9)/4)*x^4 - (86400000000*j^2 - 39366000*j^7)*x^5 + (40960000000000 - 14580000000*j^5 + 531441*j^10)*x^6;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
+
 pol := 4*f+g^2;
 f := Factorisation(pol);
 d :=[Degree(f[n,1]): n in [1..#f]]; 
@@ -443,8 +409,7 @@ j := 20*t-3;
 PolK<x> := PolynomialRing(K);
 g := -x^2;
 f :=-500*j^2 + (1600000 + 243*j^5)*x - 1350000*j^3*x^2 + (320000000*j + 291600*j^6)*x^3 - (1/4 + 48600000*j^4 + (177147*j^9)/4)*x^4 - (86400000000*j^2 - 39366000*j^7)*x^5 + (40960000000000 - 14580000000*j^5 + 531441*j^10)*x^6;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
+
 pol := 4*f+g^2;
 f := Factorisation(pol);
 d :=[Degree(f[n,1]): n in [1..#f]]; 
@@ -460,8 +425,7 @@ j := 20*t-3;
 PolK<x> := PolynomialRing(K);
 g := -x^2;
 f :=-500*j^2 + (1600000 + 243*j^5)*x - 1350000*j^3*x^2 + (320000000*j + 291600*j^6)*x^3 - (1/4 + 48600000*j^4 + (177147*j^9)/4)*x^4 - (86400000000*j^2 - 39366000*j^7)*x^5 + (40960000000000 - 14580000000*j^5 + 531441*j^10)*x^6;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
+
 pol := 4*f+g^2;
 f := Factorisation(pol);
 d :=[Degree(f[n,1]): n in [1..#f]]; 
@@ -477,8 +441,7 @@ j := 20*t-3;
 PolK<x> := PolynomialRing(K);
 g := -x^2;
 f :=-500*j^2 + (1600000 + 243*j^5)*x - 1350000*j^3*x^2 + (320000000*j + 291600*j^6)*x^3 - (1/4 + 48600000*j^4 + (177147*j^9)/4)*x^4 - (86400000000*j^2 - 39366000*j^7)*x^5 + (40960000000000 - 14580000000*j^5 + 531441*j^10)*x^6;
-C := HyperellipticCurve(f,g);
-f,g :=HyperellipticPolynomials(Genus2Model(C));
+
 pol := 4*f+g^2;
 f := Factorisation(pol);
 d :=[Degree(f[n,1]): n in [1..#f]]; 

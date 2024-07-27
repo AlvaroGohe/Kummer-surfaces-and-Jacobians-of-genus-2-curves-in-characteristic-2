@@ -1,8 +1,13 @@
-// There are no checks in this file, so please don't be surprised if you don't get a correct result if you input 
-// The functions GeneralKummerSurface and Kappa have been mostly copied from the code of the article by Steffen Muller to whom I thank. I have included them because they constituted the basis of most of the code I wrote.
-// If you find any bug or mistake, or if you have any question, please don't hesitate in contacting me :)
-// alvaro.gohe@gmail.com
+// This is code accompanying the paper "Explicit construction of Kummer surfaces in characterstic 2 via specialisation"
 
+// There are no checks in this file, so be aware that you are likely to get wrong output if you add incorrect input.
+
+// The functions GeneralKummerSurface and Kappa have been mostly copied from the code of the article by Steffen Muller to whom I thank. I have included them because they constituted the basis of most of the code I wrote.
+
+// In terms of notation, an important point is that J will be used when referring to Jacobians of a genus 2 curves as implemented in MAGMA, and Jac will refer to the model of the Jacobian as 72 equations in P^15.
+
+// If you find any bug or mistake, or if you have any question, please don't hesitate in contacting me :)
+// email: alvaro.gohe@gmail.com
 
 // This function takes any hyperelliptic genus 2 curve and transforms it into one of the form y^2+g(x)y=f(x) with deg(g)=3.
 function Genus2Model(C)
@@ -55,14 +60,14 @@ function Genus2Model(C)
 return HyperellipticCurve(f,g);
 end function;
 
-// Given a genus 2 curve, this function computes the associated Kummer surface
+// Given a genus 2 curve, this function computes the associated Kummer surface.
 function GeneralKummerSurface(C)
  return GeneralKummerSurface(Jacobian(C));
 end function;
 
-// Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Kummer surface 
+// Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Kummer surface. This code was written by Muller, and I have only changed a few bits, mainly to uniform notation.
 function GeneralKummerSurface(J)
- C := Curve(J);
+ C :=  Genus2Model(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P<k1,k2,k3,k4> := ProjectiveSpace(k,3);
@@ -82,14 +87,14 @@ function GeneralKummerSurface(J)
  return S; 
 end function;
 
-// Given a genus 2 curve, this function computes the associated Jacobian surface embedded in P^15
+// Given a genus 2 curve, this function computes the associated Jacobian surface embedded in P^15.
 function GeneralJacobianSurface(C)
  return GeneralJacobianSurface(Jacobian(C));
 end function;
 
-// Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Jacobian surface embedded in P^15
+// Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Jacobian surface embedded in P^15. The equations have been computed in the Mathematica notebook titled Part 2, and the equations are also independently in the text file "72 equations of the Jacobian.txt".
 function GeneralJacobianSurface(J)
- C := Curve(J);
+ C := Genus2Model(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P15<v1, v2, v3, v4, v5, v6, k11, k12, k13, k14, k22, k23, k24, k33, k34, k44> := ProjectiveSpace(k,15); 
@@ -109,13 +114,14 @@ function GeneralJacobianSurface(J)
  return S; 
 end function;
 
-function kappa(P) // The following function computes the coordinates of a point P on the Jacobian of a genus 2 curve in the Kummer surface.
+// The following function computes the coordinates of the image of a point P on the Jacobian of a genus 2 curve in the Kummer surface. The code finds the representation of a point in Mumford coordinates as a divisor of the form {P1+P2-infinity_+-infinity_-} split into cases depending on whether P1, P2 are affine points or points on the infinite.
+function kappa(P) 
  J := Parent(P);
  C := Curve(J);
  K := GeneralKummerSurface(J);
  a := P[1]; b := P[2]; d := P[3]; 
- if Degree(a) eq 2 then  // P1 and P2 are affine, say P1=(x1,y1),P2=(x2,y2)
-  x1x2diffsq := Discriminant(a);  //(x1-x2)^2
+ if Degree(a) eq 2 then  // P1 and P2 are affine, say P1=(x1,y1),P2=(x2,y2).
+  x1x2diffsq := Discriminant(a);  // (x1-x2)^2.
   f,g := HyperellipticPolynomials(C);
   f0 := Coefficient(f,0);
   f1 := Coefficient(f,1);
@@ -131,7 +137,7 @@ function kappa(P) // The following function computes the coordinates of a point 
   k1 := 1;
   k2 := -Coefficient(a,1);
   k3 := Coefficient(a,0);
-  if x1x2diffsq ne 0 then  // P1 is not equal to P2
+  if x1x2diffsq ne 0 then  // P1 is not equal to P2.
    b1 := Coefficient(b, 1);  
    b0 := Coefficient(b, 0);
    y1y2prod := b1^2*k3+b0*b1*k2+b0^2;  // y1*y2
@@ -148,16 +154,16 @@ function kappa(P) // The following function computes the coordinates of a point 
       (2*f2*f6 - 2*f3*f5 + f4^2)*k1^2*k3^4 + (-2*f0*f6 + 2*f1*f5 - 2*f2*f4 + f3^2)*k1^3*k3^3
       + (2*f0*f4 - 2*f1*f3 + f2^2)*k1^4*k3^2 + (-2*f0*f2 + f1^2)*k1^5*k3 + f0^2*k1^6;
     if y1y2prod ne 0 then
-     gx1y2gx2y1sum := fx1x2/y1y2prod-y1y2prod-gx1x2; // g(x1)*y2+g(x2)*y1 when y1 and y2 are nonzero 
+     gx1y2gx2y1sum := fx1x2/y1y2prod-y1y2prod-gx1x2; // g(x1)*y2+g(x2)*y1 when y1 and y2 are nonzero.
     else              
       if b1 ne 0 then 
        x1 := -b0/b1;
        gx1 := Evaluate(g,x1);
        x2 := k2-x1;
        y2 := Evaluate(b,x2);
-       gx1y2gx2y1sum := gx1*y2;  // g(x1)*y2+g(x2)*y1 when y1=0
+       gx1y2gx2y1sum := gx1*y2;  // g(x1)*y2+g(x2)*y1 when y1=0.
       else 
-       gx1y2gx2y1sum := 0;  // g(x1)*y2+g(x2)*y1 when y1=y2=0
+       gx1y2gx2y1sum := 0;  // g(x1)*y2+g(x2)*y1 when y1=y2=0.
       end if;                  
     end if;
     F0 := 2*f0+f1*k2+2*f2*k3+f3*k2*k3+2*f4*k3^2+f5*k2*k3^2+2*f6*k3^3; 
@@ -203,18 +209,19 @@ function kappa(P) // The following function computes the coordinates of a point 
    f6 := Coefficient(f,6);
    g2 := Coefficient(g,2);
    g3 := Coefficient(g,3);
-   k4 := (f5^2-4*f4*f6-g3^2*f4-g2^2*f6+g2*g3*f5)/(4*f6+g3^2); // 4*f6+g3^2=0 can't happen, since otherwise there's only one point at infinity
+   k4 := (f5^2-4*f4*f6-g3^2*f4-g2^2*f6+g2*g3*f5)/(4*f6+g3^2); // 4*f6+g3^2=0 can't happen, since otherwise there's only one point at infinity.
    return [0,0,1,k4];   
  else  // P=0.
    return [0,0,0,1];
  end if;    
 end function;
 
-// The following function does the same as the one before, but also defines the point in the Kummer
+// The following function does the same as the one before, but also defines the point in the Kummer.
 function Kappa(K,P) 
  return K!(kappa(P)); 
 end function;
 
+// The following function computes the coordinates of the image of a point P on the Jacobian of a genus 2 curve in the model of the surface in P^15. The code finds the representation of a point in Mumford coordinates as a divisor of the form {P1+P2-infinity_+-infinity_-} split into cases depending on whether P1, P2 are affine points or points on the infinite.
 function gamma(P) 
  J := Parent(P);
  C := Curve(J);
@@ -233,8 +240,8 @@ function gamma(P)
  g1 := Coefficient(g,1);
  g2 := Coefficient(g,2);
  g3 := Coefficient(g,3);
- if Degree(a) eq 2 then  // P1 and P2 are affine, say P1=(x1,y1),P2=(x2,y2)
-  x1x2diffsq := Discriminant(a);  //(x1-x2)^2
+ if Degree(a) eq 2 then  // P1 and P2 are affine, say P1=(x1,y1),P2=(x2,y2).
+  x1x2diffsq := Discriminant(a);  // (x1-x2)^2.
   k1 := 1;
   k2 := -Coefficient(a,1);
   k3 := Coefficient(a,0);
@@ -244,11 +251,11 @@ function gamma(P)
   v2 := -b0 - g0;
   v3 := (-b0 - g0)*k2 + (-b1 - g1)*k3;
   v4 := b0*b1 - f1 + b1*g0 + k3*(-(b1*g2) + k2*(f4 - b1*g3 + k2*(f5 + f6*k2)) + (-f5 - f6*k2)*k3);
-  if x1x2diffsq ne 0 then  // P1 is not equal to P2
-   y1y2prod := b1^2*k3+b0*b1*k2+b0^2;  // y1*y2
+  if x1x2diffsq ne 0 then  // P1 is not equal to P2.
+   y1y2prod := b1^2*k3+b0*b1*k2+b0^2;  // y1*y2.
    gx1x2 := g0*g3*k2^3 + g1*g3*k2^2*k3 + g0*g2*k1*k2^2 + g2*g3*k2*k3^2 + (-3*g0*g3 + 
       g1*g2)*k1*k2*k3 + g0*g1*k1^2*k2 + g3^2*k3^3 + (-2*g1*g3 + g2^2)*k1*k3^2 + (-2*g0*g2 + 
-      g1^2)*k1^2*k3 + g0^2*k1^3; // g(x1)g(x2)
+      g1^2)*k1^2*k3 + g0^2*k1^3; // g(x1)g(x2).
    fx1x2 := f0*f6*k2^6 + f1*f6*k2^5*k3 + f0*f5*k1*k2^5 + f2*f6*k2^4*k3^2 + (-6*f0*f6 + 
       f1*f5)*k1*k2^4*k3 + f0*f4*k1^2*k2^4 + f3*f6*k2^3*k3^3 + (-5*f1*f6 + f2*f5)*k1*k2^3*k3^2
       + (-5*f0*f5 + f1*f4)*k1^2*k2^3*k3 + f0*f3*k1^3*k2^3 + f4*f6*k2^2*k3^4 + (-4*f2*f6 + 
@@ -259,16 +266,16 @@ function gamma(P)
       (2*f2*f6 - 2*f3*f5 + f4^2)*k1^2*k3^4 + (-2*f0*f6 + 2*f1*f5 - 2*f2*f4 + f3^2)*k1^3*k3^3
       + (2*f0*f4 - 2*f1*f3 + f2^2)*k1^4*k3^2 + (-2*f0*f2 + f1^2)*k1^5*k3 + f0^2*k1^6; // f(x1)f(x2)
     if y1y2prod ne 0 then
-     gx1y2gx2y1sum := fx1x2/y1y2prod-y1y2prod-gx1x2; // g(x1)*y2+g(x2)*y1 when y1 and y2 are nonzero 
+     gx1y2gx2y1sum := fx1x2/y1y2prod-y1y2prod-gx1x2; // g(x1)*y2+g(x2)*y1 when y1 and y2 are nonzero.
   else              
       if b1 ne 0 then 
        x1 := -b0/b1;
        gx1 := Evaluate(g,x1);
        x2 := k2-x1;
        y2 := Evaluate(b,x2);
-       gx1y2gx2y1sum := gx1*y2;  // g(x1)*y2+g(x2)*y1 when y1=0
+       gx1y2gx2y1sum := gx1*y2;  // g(x1)*y2+g(x2)*y1 when y1=0.
       else 
-       gx1y2gx2y1sum := 0;  // g(x1)*y2+g(x2)*y1 when y1=y2=0
+       gx1y2gx2y1sum := 0;  // g(x1)*y2+g(x2)*y1 when y1=y2=0.
       end if;                  
     end if;
     F0 := 2*f0+f1*k2+2*f2*k3+f3*k2*k3+2*f4*k3^2+f5*k2*k3^2+2*f6*k3^3; 
@@ -314,7 +321,7 @@ function gamma(P)
      v6 := (-2*f5^2*g0*g3 + 4*f4*f6*g0*g3 + f6*g0*g2^2*g3 - 2*f1*f6*g3^2 + f6*g0*g1*g3^2 - 2*f5*g0*g2*g3^2 + f4*g0*g3^3 - f1*g3^4 + 2*f5^2*g0*v1 + 8*f4*f6*g0*v1 + 2*f6*g0*g2^2*v1 - 4*f1*f6*g3*v1 + 2*f6*g0*g1*g3*v1 + 5*f5*g0*g2*g3*v1 + 2*f4*g0*g3^2*v1 + 3*g0*g2^2*g3^2*v1 - f1*g3^3*v1 + g0*g1*g3^3*v1 + 2*f5^2*g1*v2 + 8*f4*f6*g1*v2 + 2*f6*g1*g2^2*v2 - 8*f2*f6*g3*v2 + 2*f6*g1^2*g3*v2 - 4*f6*g0*g2*g3*v2 + 5*f5*g1*g2*g3*v2 + 3*f5*g0*g3^2*v2 + 2*f4*g1*g3^2*v2 + 3*g1*g2^2*g3^2*v2 - 2*f2*g3^3*v2 + g1^2*g3^3*v2 + g0*g2*g3^3*v2 + 2*f5^2*g2*v3 + 8*f4*f6*g2*v3 + 2*f6*g2^3*v3 - 12*f3*f6*g3*v3 - 2*f6*g1*g2*g3*v3 + 5*f5*g2^2*g3*v3 - 2*f6*g0*g3^2*v3 + 3*f5*g1*g3^2*v3 + 2*f4*g2*g3^2*v3 + 3*g2^3*g3^2*v3 - 3*f3*g3^3*v3 + g1*g2*g3^3*v3 + k4*(-2*f5^2 - 8*f4*f6 - 2*f6*g2^2 - 4*f6*g1*g3 - 5*f5*g2*g3 - 2*f4*g3^2 - 3*g2^2*g3^2 - g1*g3^3 + k3*(-3*f5*g3^2 - 2*g2*g3^3 + (-4*f6*g3^2 - g3^4)*k3) - 8*f6*g3*v3 - 2*g3^3*v3) + k3*(-2*f5^2*g1*g3 + 4*f4*f6*g1*g3 + f6*g1*g2^2*g3 - 4*f2*f6*g3^2 + f6*g1^2*g3^2 - 2*f6*g0*g2*g3^2 - 2*f5*g1*g2*g3^2 + f5*g0*g3^3 + f4*g1*g3^3 - f2*g3^4 + k3*(-2*f5^3 - 8*f4*f5*f6 - 2*f5*f6*g2^2 - 4*f5*f6*g1*g3 - f5^2*g2*g3 + 4*f4*f6*g2*g3 + f6*g2^3*g3 - 2*f4*f5*g3^2 - 6*f3*f6*g3^2 - f6*g1*g2*g3^2 - 2*f5*g2^2*g3^2 - f6*g0*g3^3 + f4*g2*g3^3 - 2*f3*g3^4 + (f5^2*g3^2 - 4*f4*f6*g3^2 - f6*g2^2*g3^2 + f5*g2*g3^3 - f4*g3^4)*k3) + 2*f5^2*g3*v3 - 8*f4*f6*g3*v3 - 2*f6*g2^2*g3*v3 + 2*f5*g2*g3^2*v3 - 2*f4*g3^3*v3) - 4*f5^2*v4 - 16*f4*f6*v4 - 4*f6*g2^2*v4 - 8*f6*g1*g3*v4 - 4*f5*g2*g3*v4 - 4*f4*g3^2*v4 - 2*g2^2*g3^2*v4 - 2*g1*g3^3*v4 - 6*f5*g3*v5 - 3*g2*g3^2*v5)/g3;
   return [v1, v2, v3, v4, v5, v6, 0, 0, 0, 0, 1, k3, k4, k3^2, k3*k4, k4^2];
  elif Degree(b) eq 3 then // 2 points at infinity in P.
-   k4 := (f5^2-4*f4*f6-g3^2*f4-g2^2*f6+g2*g3*f5)/(4*f6+g3^2); // 4*f6+g3^2=0 can't happen, since otherwise there's only one point at infinity
+   k4 := (f5^2-4*f4*f6-g3^2*f4-g2^2*f6+g2*g3*f5)/(4*f6+g3^2); // 4*f6+g3^2=0 can't happen, since otherwise there's only one point at infinity.
    v3 := Coefficient(b,3);
    v4 := (-2*f5*f6 + f6*g2*g3 - f5*g3^2 + 2*f6*g2*v3 - f5*g3*v3)/(4*f6 + g3^2);
    v5 := -((-(f5^2*g3) + f6*g2^2*g3 - f5*g2*g3^2 - 3*f5^2*v3 + 4*f4*f6*v3 - f6*g2^2*v3 - 3*f5*g2*g3*v3 + f4*g3^2*v3 - g2^2*g3^2*v3)/(4*f6 + g3^2));
@@ -325,11 +332,12 @@ function gamma(P)
  end if;    
 end function;
 
+// The following function does the same as the one before, but also defines the point in the surface itself.
 function Gamma(Jac,P) 
  return Jac!(gamma(P)); 
 end function;
 
-function CoordinatesProjectionToKummer(P) // This function allows us to project points in the projective model of the Jacobian into the projective model of the Kummer
+function CoordinatesProjectionToKummer(P) // This function allows us to project points in the projective model of the Jacobian into the projective model of the Kummer.
   if P[7] ne 0 then
    k1 := P[7];
    k2 := P[8];
@@ -355,7 +363,7 @@ function CoordinatesProjectionToKummer(P) // This function allows us to project 
  return [k1,k2,k3,k4];
 end function;
 
-function LiftKummerToJacobian(Jac, P) // This function allows us to lift a point from the model of the Kummer into the projective model of the Jacobian. The output can basically be three things: no points, if the point of the Kummer does not lift to a point of the Jacobian over the ground field, one point of the Jacobian if the input is one of the singular points of the Kummer or two points if the point is not singular and the point of the Kummer lifts to points in the Jacobian over the ground field
+function LiftKummerToJacobian(Jac, P) // This function allows us to lift a point from the model of the Kummer into the projective model of the Jacobian. The output can basically be three things: no points, if the point of the Kummer does not lift to a point of the Jacobian over the ground field, one point of the Jacobian if the input is one of the singular points of the Kummer or two points if the point is not singular and the point of the Kummer lifts to points in the Jacobian over the ground field.
  K := Parent(P);
  k1 := P[1];
  k2 := P[2];
@@ -366,7 +374,8 @@ function LiftKummerToJacobian(Jac, P) // This function allows us to lift a point
  return Points(Intersection(S,Jac));
 end function;
 
-function InverseGamma(J,P)
+// This is the inverse of the function Gamma defined earlier: takes tha Jacobian J of a genus 2 curve and a point P in the corresponding model Jac of the Jacobian surface in P^15 and returns the corresponding point in J expressed in Mumford form.
+function InverseGamma(J,P) 
  C := Curve(J);
  f,g := HyperellipticPolynomials(C);
  f0 := Coefficient(f,0);
@@ -407,7 +416,7 @@ function InverseGamma(J,P)
   else if k22 ne 0 then
    a := k22*x-k23;
    yinf := v1/k22;
-   y1 :=(-(k22*k24) + f5*k22*k33 + 2*f6*k23*k33 - g0*k22*v1 - g2*k33*v1 + k23*(-(g1*v1) - g3*v3))/(k22*(g3*k22 + 2*v1)); //It is easy to check that in this case v1 satisfies that v1^2+g3*v1*k22-f6*k22^2=0 and so g3*k22+2*v1=0 iff 4*f6+g3^2=0 
+   y1 :=(-(k22*k24) + f5*k22*k33 + 2*f6*k23*k33 - g0*k22*v1 - g2*k33*v1 + k23*(-(g1*v1) - g3*v3))/(k22*(g3*k22 + 2*v1)); // It is easy to check that in this case v1 satisfies that v1^2+g3*v1*k22-f6*k22^2=0 and so g3*k22+2*v1=0 iff 4*f6+g3^2=0.
    b := yinf*x^3-yinf*(k23/k22)^3+y1;
    d := 2;
    else if k33 ne 0 then
@@ -420,21 +429,21 @@ function InverseGamma(J,P)
  return elt<J|a,b,d>;
 end function;
 
-function Addition(J, P, Q) // This allows us to add points in our projective model of the Jacobian by going back to the MAGMA description of the Jacobian, adding the points there and then lift them back to our model. This is way faster than any other formula involving the sum of points in the projective model of the Jacobian
+function Addition(J, P, Q) // This allows us to add points in our projective model of the Jacobian by going back to the MAGMA description of the Jacobian, adding the points there and then lift them back to our model. This is way faster than any other formula involving the sum of points in the projective model of the Jacobian.
 Jac := Parent(P);
 PJ := InverseGamma(J, P);
 QJ := InverseGamma(J, Q);
 return Gamma(Jac, PJ+QJ);
 end function;
 
-function MultiplicationByn(J, P, n) // This computes multiplication by n in our projective model of the Jacobian
+function MultiplicationByn(J, P, n) // This computes multiplication by n in our projective model of the Jacobian.
 Jac := Parent(P);
 PJ := InverseGamma(J, P);
 return Gamma(Jac, n*PJ);
 end function;
 
-function DesingularisedKummer(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Kummer surface as the intersection of three quadrics in P5. It is called DesingularisedKummer, because if the characteristic of the base field is not 2, this is smooth. In characteristic 2, geometrically, it will have 12, 4 or 1 singular point depending on whether the input Jacobian is ordinary, almost ordinary or supersingular
- C := Curve(J);
+function DesingularisedKummer(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Kummer surface as the intersection of three quadrics in P5. It is called DesingularisedKummer, because if the characteristic of the base field is not 2, this is smooth. In characteristic 2, geometrically, it will have 12, 4 or 1 singular point depending on whether the input Jacobian is ordinary, almost ordinary or supersingular (i.e. the p-rank is 2, 1 or 0).
+ C := Genus2Model(Curve(J));2, 
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P5<b1, b2, b3, b4, b5, b6> := ProjectiveSpace(k,5); 
@@ -456,7 +465,7 @@ function DesingularisedKummer(J) // Given the Jacobian of a genus 2 curve, this 
  return S;
 end function;
 
-function JacobianQuotient(J, Jac, Des)
+function JacobianQuotient(J, Jac, Des) // This function takes the Jacobian, the projective model of the Jacobian Jac and the desingularised model of the Kummer Des and construct the quotient map from Jac to Des.
  C := Curve(J);
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
@@ -476,7 +485,30 @@ phi := map<Jac->Des | [g1*k11 + g2*k12 + g3*k13 + g3*k22 + 2*v1, g0*k11 + g2*k13
 return phi;
 end function;
 
-function LinesNotCharacteristic2(J,Des0)
+// As explained in the paper, regardless of the characteristic of the base field, inside of the desingularised model of a Kummer surface there are two sets of very special lines, the exceptional lines corresponding to the blow-up of the singular points of the singular Kummer surface, and the tropes, which correspond to the images under the quotient map of special curves going through the 2-torsion points of the Jacobian. 
+
+function Lines(J, Des0) // This function takes a Jacobian and the desingularised model of its associated Kummer and returns a list with the exceptional lines, a list with the tropes and possibly a bit more data (this depends on whether the characteristic of the field is 2, and what the p-rank is). How to compute the lines in each situation will be explained later
+ k := BaseRing(Des0)
+ if Characteristic(k) ne 2 then
+  return LinesNotCharacteristic2(J,Des0);
+  else 
+   C := Curve(J);
+   f,g := HyperellipticPolynomials(C);
+   g0 := Coefficient(g,0);
+   g1 := Coefficient(g,1);
+   g2 := Coefficient(g,2);
+   g3 := Coefficient(g,3);
+   if g1*g2 + g0*g3 ne 0 then // g1*g2 + g0*g3 is the discriminant of g(x), therefore if it is not zero, then g has 3 different roots and the curve is ordinary.
+    return LinesOrdinary(J,Des0);
+    else if g2^2 + g1 g3 ne 0 then // if g2^2 + g1 g3 is zero, then the 3 roots are the same, so this makes the distinction between the almost ordinary and the       supersingular cases.
+     return LinesAlmostOrdinary(J, Des0);
+     else return LinesAlmostOrdinary(J, Des0);
+    end if;
+   end if;
+ end if;
+end function;
+
+function LinesNotCharacteristic2(J,Des0) // This function computes the lines when the characteristic is not zero. In this case, there are 16 exceptional lines and 16 tropes, which are only defined over the field where all the Weierstrass points of the curve are defined, which is the splitting field of the polynomial 4*f(x)+g(x)^2). This function returns the lines and also the same surface but defined over the new field extension where all lines are defined. The equations were derived in the Mathematica notebook titled Part 3.
  C0 := Curve(J);
  k := BaseRing(C0);
  f0,g0 := HyperellipticPolynomials(C0);
@@ -519,7 +551,7 @@ function LinesNotCharacteristic2(J,Des0)
   E45 := Intersection(Des,Scheme(P5,[-16*b2*f1*f5 - 8*b2*f5*g0*g1 - 8*b2*f1*g2*g3 - 4*b2*g0*g1*g2*g3 + 8*b1*f1*f5*r4 - 16*b2*f2*f5*r4 - 8*b2*f1*f6*r4 + 4*b1*f5*g0*g1*r4 - 4*b2*f6*g0*g1*r4 - 4*b2*f5*g1^2*r4 -   8*b2*f5*g0*g2*r4 + 4*b1*f1*g2*g3*r4 - 8*b2*f2*g2*g3*r4 + 2*b1*g0*g1*g2*g3*r4 - 2*b2*g1^2*g2*g3*r4 - 4*b2*g0*g2^2*g3*r4 - 2*b2*f1*g3^2*r4 - b2*g0*g1*g3^2*r4 + 2*b6*r4^2 -   24*b2*f3*f5*r4^2 + 8*b1*f1*f6*r4^2 + 4*b1*f6*g0*g1*r4^2 - 12*b2*f5*g1*g2*r4^2 - 12*b2*f5*g0*g3*r4^2 - 12*b2*f3*g2*g3*r4^2 - b1*g0*g2^2*g3*r4^2 - 7*b2*g1*g2^2*g3*r4^2 +   2*b1*f1*g3^2*r4^2 - b2*g1^2*g3^2*r4^2 - 7*b2*g0*g2*g3^2*r4^2 - 32*b2*f4*f5*r4^3 - 8*b2*f5*g2^2*r4^3 - 16*b2*f5*g1*g3*r4^3 - 16*b2*f4*g2*g3*r4^3 - 5*b2*g2^3*g3*r4^3 -   8*b2*g1*g2*g3^2*r4^3 - b2*g0*g3^3*r4^3 - 40*b2*f5^2*r4^4 - 40*b2*f5*g2*g3*r4^4 - 10*b2*g2^2*g3^2*r4^4 - 48*b2*f5*f6*r4^5 - 24*b2*f6*g2*g3*r4^5 - 12*b2*f5*g3^2*r4^5 -   6*b2*g2*g3^3*r4^5 - 16*b2*f6^2*r4^6 - 8*b2*f6*g3^2*r4^6 - b2*g3^4*r4^6 + 8*b1*f1*f5*r5 - 16*b2*f2*f5*r5 - 8*b2*f1*f6*r5 + 4*b1*f5*g0*g1*r5 - 4*b2*f6*g0*g1*r5 -   4*b2*f5*g1^2*r5 - 8*b2*f5*g0*g2*r5 + 4*b1*f1*g2*g3*r5 - 8*b2*f2*g2*g3*r5 + 2*b1*g0*g1*g2*g3*r5 - 2*b2*g1^2*g2*g3*r5 - 4*b2*g0*g2^2*g3*r5 - 2*b2*f1*g3^2*r5 -   b2*g0*g1*g3^2*r5 - 4*b6*r4*r5 + 32*b1*f2*f5*r4*r5 - 32*b2*f2*f6*r4*r5 + 8*b1*f5*g1^2*r4*r5 - 8*b2*f6*g1^2*r4*r5 + 16*b1*f5*g0*g2*r4*r5 - 16*b2*f6*g0*g2*r4*r5 +   16*b1*f2*g2*g3*r4*r5 + 4*b1*g1^2*g2*g3*r4*r5 + 10*b1*g0*g2^2*g3*r4*r5 + 2*b2*g1*g2^2*g3*r4*r5 - 8*b2*f2*g3^2*r4*r5 + 2*b1*g0*g1*g3^2*r4*r5 - 2*b2*g0*g2*g3^2*r4*r5 +   24*b1*f3*f5*r4^2*r5 + 16*b1*f2*f6*r4^2*r5 - 24*b2*f3*f6*r4^2*r5 + 4*b1*f6*g1^2*r4^2*r5 + 8*b1*f6*g0*g2*r4^2*r5 + 12*b1*f5*g1*g2*r4^2*r5 - 12*b2*f6*g1*g2*r4^2*r5 +   12*b1*f5*g0*g3*r4^2*r5 - 12*b2*f6*g0*g3*r4^2*r5 + 12*b1*f3*g2*g3*r4^2*r5 + 6*b1*g1*g2^2*g3*r4^2*r5 + b2*g2^3*g3*r4^2*r5 + 4*b1*f2*g3^2*r4^2*r5 - 6*b2*f3*g3^2*r4^2*r5 +   b1*g1^2*g3^2*r4^2*r5 + 8*b1*g0*g2*g3^2*r4^2*r5 - 3*b2*g1*g2*g3^2*r4^2*r5 - 2*b2*g0*g3^3*r4^2*r5 + 32*b1*f4*f5*r4^3*r5 - 32*b2*f4*f6*r4^3*r5 + 8*b1*f5*g2^2*r4^3*r5 -   8*b2*f6*g2^2*r4^3*r5 + 16*b1*f5*g1*g3*r4^3*r5 - 16*b2*f6*g1*g3*r4^3*r5 + 16*b1*f4*g2*g3*r4^3*r5 + 5*b1*g2^3*g3*r4^3*r5 - 8*b2*f4*g3^2*r4^3*r5 + 8*b1*g1*g2*g3^2*r4^3*r5 -   2*b2*g2^2*g3^2*r4^3*r5 + b1*g0*g3^3*r4^3*r5 - 4*b2*g1*g3^3*r4^3*r5 + 40*b1*f5^2*r4^4*r5 - 40*b2*f5*f6*r4^4*r5 + 40*b1*f5*g2*g3*r4^4*r5 - 20*b2*f6*g2*g3*r4^4*r5 -   10*b2*f5*g3^2*r4^4*r5 + 10*b1*g2^2*g3^2*r4^4*r5 - 5*b2*g2*g3^3*r4^4*r5 + 48*b1*f5*f6*r4^5*r5 - 32*b2*f6^2*r4^5*r5 + 24*b1*f6*g2*g3*r4^5*r5 + 12*b1*f5*g3^2*r4^5*r5 -   16*b2*f6*g3^2*r4^5*r5 + 6*b1*g2*g3^3*r4^5*r5 - 2*b2*g3^4*r4^5*r5 + 16*b1*f6^2*r4^6*r5 + 8*b1*f6*g3^2*r4^6*r5 + b1*g3^4*r4^6*r5 + 2*b6*r5^2 - 24*b2*f3*f5*r5^2 +   8*b1*f1*f6*r5^2 + 4*b1*f6*g0*g1*r5^2 - 12*b2*f5*g1*g2*r5^2 - 12*b2*f5*g0*g3*r5^2 - 12*b2*f3*g2*g3*r5^2 - b1*g0*g2^2*g3*r5^2 - 7*b2*g1*g2^2*g3*r5^2 + 2*b1*f1*g3^2*r5^2 -   b2*g1^2*g3^2*r5^2 - 7*b2*g0*g2*g3^2*r5^2 + 24*b1*f3*f5*r4*r5^2 + 16*b1*f2*f6*r4*r5^2 - 24*b2*f3*f6*r4*r5^2 + 4*b1*f6*g1^2*r4*r5^2 + 8*b1*f6*g0*g2*r4*r5^2 +   12*b1*f5*g1*g2*r4*r5^2 - 12*b2*f6*g1*g2*r4*r5^2 + 12*b1*f5*g0*g3*r4*r5^2 - 12*b2*f6*g0*g3*r4*r5^2 + 12*b1*f3*g2*g3*r4*r5^2 + 6*b1*g1*g2^2*g3*r4*r5^2 +   b2*g2^3*g3*r4*r5^2 + 4*b1*f2*g3^2*r4*r5^2 - 6*b2*f3*g3^2*r4*r5^2 + b1*g1^2*g3^2*r4*r5^2 + 8*b1*g0*g2*g3^2*r4*r5^2 - 3*b2*g1*g2*g3^2*r4*r5^2 - 2*b2*g0*g3^3*r4*r5^2 +   48*b1*f3*f6*r4^2*r5^2 + 24*b1*f6*g1*g2*r4^2*r5^2 + 24*b1*f6*g0*g3*r4^2*r5^2 - 2*b1*g2^3*g3*r4^2*r5^2 + 12*b1*f3*g3^2*r4^2*r5^2 + 6*b1*g1*g2*g3^2*r4^2*r5^2 +   4*b1*g0*g3^3*r4^2*r5^2 + 32*b1*f4*f6*r4^3*r5^2 + 8*b1*f6*g2^2*r4^3*r5^2 + 16*b1*f6*g1*g3*r4^3*r5^2 + 8*b1*f4*g3^2*r4^3*r5^2 + 2*b1*g2^2*g3^2*r4^3*r5^2 +   4*b1*g1*g3^3*r4^3*r5^2 + 40*b1*f5*f6*r4^4*r5^2 + 20*b1*f6*g2*g3*r4^4*r5^2 + 10*b1*f5*g3^2*r4^4*r5^2 + 5*b1*g2*g3^3*r4^4*r5^2 + 32*b1*f6^2*r4^5*r5^2 +   16*b1*f6*g3^2*r4^5*r5^2 + 2*b1*g3^4*r4^5*r5^2 - 32*b2*f4*f5*r5^3 - 8*b2*f5*g2^2*r5^3 - 16*b2*f5*g1*g3*r5^3 - 16*b2*f4*g2*g3*r5^3 - 5*b2*g2^3*g3*r5^3 -   8*b2*g1*g2*g3^2*r5^3 - b2*g0*g3^3*r5^3 + 32*b1*f4*f5*r4*r5^3 - 32*b2*f4*f6*r4*r5^3 + 8*b1*f5*g2^2*r4*r5^3 - 8*b2*f6*g2^2*r4*r5^3 + 16*b1*f5*g1*g3*r4*r5^3 -   16*b2*f6*g1*g3*r4*r5^3 + 16*b1*f4*g2*g3*r4*r5^3 + 5*b1*g2^3*g3*r4*r5^3 - 8*b2*f4*g3^2*r4*r5^3 + 8*b1*g1*g2*g3^2*r4*r5^3 - 2*b2*g2^2*g3^2*r4*r5^3 + b1*g0*g3^3*r4*r5^3 -   4*b2*g1*g3^3*r4*r5^3 + 32*b1*f4*f6*r4^2*r5^3 + 8*b1*f6*g2^2*r4^2*r5^3 + 16*b1*f6*g1*g3*r4^2*r5^3 + 8*b1*f4*g3^2*r4^2*r5^3 + 2*b1*g2^2*g3^2*r4^2*r5^3 +   4*b1*g1*g3^3*r4^2*r5^3 - 40*b2*f5^2*r5^4 - 40*b2*f5*g2*g3*r5^4 - 10*b2*g2^2*g3^2*r5^4 + 40*b1*f5^2*r4*r5^4 - 40*b2*f5*f6*r4*r5^4 + 40*b1*f5*g2*g3*r4*r5^4 -   20*b2*f6*g2*g3*r4*r5^4 - 10*b2*f5*g3^2*r4*r5^4 + 10*b1*g2^2*g3^2*r4*r5^4 - 5*b2*g2*g3^3*r4*r5^4 + 40*b1*f5*f6*r4^2*r5^4 + 20*b1*f6*g2*g3*r4^2*r5^4 +   10*b1*f5*g3^2*r4^2*r5^4 + 5*b1*g2*g3^3*r4^2*r5^4 - 48*b2*f5*f6*r5^5 - 24*b2*f6*g2*g3*r5^5 - 12*b2*f5*g3^2*r5^5 - 6*b2*g2*g3^3*r5^5 + 48*b1*f5*f6*r4*r5^5 -   32*b2*f6^2*r4*r5^5 + 24*b1*f6*g2*g3*r4*r5^5 + 12*b1*f5*g3^2*r4*r5^5 - 16*b2*f6*g3^2*r4*r5^5 + 6*b1*g2*g3^3*r4*r5^5 - 2*b2*g3^4*r4*r5^5 + 32*b1*f6^2*r4^2*r5^5 +   16*b1*f6*g3^2*r4^2*r5^5 + 2*b1*g3^4*r4^2*r5^5 - 16*b2*f6^2*r5^6 - 8*b2*f6*g3^2*r5^6 - b2*g3^4*r5^6 + 16*b1*f6^2*r4*r5^6 + 8*b1*f6*g3^2*r4*r5^6 + b1*g3^4*r4*r5^6,  4*b2*f1 + 2*b2*g0*g1 - 2*b1*f1*r4 + 4*b2*f2*r4 - b1*g0*g1*r4 + b2*g1^2*r4 + 2*b2*g0*g2*r4 + 2*b5*r4^2 + 6*b2*f3*r4^2 - b1*g0*g2*r4^2 + 2*b2*g1*g2*r4^2 + 2*b2*g0*g3*r4^2 +   8*b2*f4*r4^3 + b2*g2^2*r4^3 + 3*b2*g1*g3*r4^3 + 10*b2*f5*r4^4 + 5*b2*g2*g3*r4^4 + 8*b2*f6*r4^5 + 2*b2*g3^2*r4^5 - 2*b1*f1*r5 + 4*b2*f2*r5 - b1*g0*g1*r5 + b2*g1^2*r5 +   2*b2*g0*g2*r5 - 4*b5*r4*r5 - 8*b1*f2*r4*r5 - 2*b1*g1^2*r4*r5 - 2*b1*g0*g2*r4*r5 + 2*b2*g1*g2*r4*r5 + 2*b2*g0*g3*r4*r5 - 6*b1*f3*r4^2*r5 - 3*b1*g1*g2*r4^2*r5 +   b2*g2^2*r4^2*r5 - 3*b1*g0*g3*r4^2*r5 + b2*g1*g3*r4^2*r5 - 8*b1*f4*r4^3*r5 - b1*g2^2*r4^3*r5 - 3*b1*g1*g3*r4^3*r5 - 10*b1*f5*r4^4*r5 + 4*b2*f6*r4^4*r5 -   5*b1*g2*g3*r4^4*r5 + b2*g3^2*r4^4*r5 - 8*b1*f6*r4^5*r5 - 2*b1*g3^2*r4^5*r5 + 2*b5*r5^2 + 6*b2*f3*r5^2 - b1*g0*g2*r5^2 + 2*b2*g1*g2*r5^2 + 2*b2*g0*g3*r5^2 -   6*b1*f3*r4*r5^2 - 3*b1*g1*g2*r4*r5^2 + b2*g2^2*r4*r5^2 - 3*b1*g0*g3*r4*r5^2 + b2*g1*g3*r4*r5^2 - 2*b1*g2^2*r4^2*r5^2 - 2*b1*g1*g3*r4^2*r5^2 - 4*b1*f6*r4^4*r5^2 -   b1*g3^2*r4^4*r5^2 + 8*b2*f4*r5^3 + b2*g2^2*r5^3 + 3*b2*g1*g3*r5^3 - 8*b1*f4*r4*r5^3 - b1*g2^2*r4*r5^3 - 3*b1*g1*g3*r4*r5^3 + 10*b2*f5*r5^4 + 5*b2*g2*g3*r5^4 -   10*b1*f5*r4*r5^4 + 4*b2*f6*r4*r5^4 - 5*b1*g2*g3*r4*r5^4 + b2*g3^2*r4*r5^4 - 4*b1*f6*r4^2*r5^4 - b1*g3^2*r4^2*r5^4 + 8*b2*f6*r5^5 + 2*b2*g3^2*r5^5 - 8*b1*f6*r4*r5^5 -   2*b1*g3^2*r4*r5^5, 2*b4 - b1*g0 - b2*g1 - b2*g2*r4 - b2*g3*r4^2 - b2*g2*r5 + b1*g2*r4*r5 - b2*g3*r4*r5 + b1*g3*r4^2*r5 - b2*g3*r5^2 + b1*g3*r4*r5^2,  b3 - b2*r4 - b2*r5 + b1*r4*r5]));
   E46 := Intersection(Des,Scheme(P5,[-16*b2*f1*f5 - 8*b2*f5*g0*g1 - 8*b2*f1*g2*g3 - 4*b2*g0*g1*g2*g3 + 8*b1*f1*f5*r4 - 16*b2*f2*f5*r4 - 8*b2*f1*f6*r4 + 4*b1*f5*g0*g1*r4 - 4*b2*f6*g0*g1*r4 - 4*b2*f5*g1^2*r4 -   8*b2*f5*g0*g2*r4 + 4*b1*f1*g2*g3*r4 - 8*b2*f2*g2*g3*r4 + 2*b1*g0*g1*g2*g3*r4 - 2*b2*g1^2*g2*g3*r4 - 4*b2*g0*g2^2*g3*r4 - 2*b2*f1*g3^2*r4 - b2*g0*g1*g3^2*r4 + 2*b6*r4^2 -   24*b2*f3*f5*r4^2 + 8*b1*f1*f6*r4^2 + 4*b1*f6*g0*g1*r4^2 - 12*b2*f5*g1*g2*r4^2 - 12*b2*f5*g0*g3*r4^2 - 12*b2*f3*g2*g3*r4^2 - b1*g0*g2^2*g3*r4^2 - 7*b2*g1*g2^2*g3*r4^2 +   2*b1*f1*g3^2*r4^2 - b2*g1^2*g3^2*r4^2 - 7*b2*g0*g2*g3^2*r4^2 - 32*b2*f4*f5*r4^3 - 8*b2*f5*g2^2*r4^3 - 16*b2*f5*g1*g3*r4^3 - 16*b2*f4*g2*g3*r4^3 - 5*b2*g2^3*g3*r4^3 -   8*b2*g1*g2*g3^2*r4^3 - b2*g0*g3^3*r4^3 - 40*b2*f5^2*r4^4 - 40*b2*f5*g2*g3*r4^4 - 10*b2*g2^2*g3^2*r4^4 - 48*b2*f5*f6*r4^5 - 24*b2*f6*g2*g3*r4^5 - 12*b2*f5*g3^2*r4^5 -   6*b2*g2*g3^3*r4^5 - 16*b2*f6^2*r4^6 - 8*b2*f6*g3^2*r4^6 - b2*g3^4*r4^6 + 8*b1*f1*f5*r6 - 16*b2*f2*f5*r6 - 8*b2*f1*f6*r6 + 4*b1*f5*g0*g1*r6 - 4*b2*f6*g0*g1*r6 -   4*b2*f5*g1^2*r6 - 8*b2*f5*g0*g2*r6 + 4*b1*f1*g2*g3*r6 - 8*b2*f2*g2*g3*r6 + 2*b1*g0*g1*g2*g3*r6 - 2*b2*g1^2*g2*g3*r6 - 4*b2*g0*g2^2*g3*r6 - 2*b2*f1*g3^2*r6 -   b2*g0*g1*g3^2*r6 - 4*b6*r4*r6 + 32*b1*f2*f5*r4*r6 - 32*b2*f2*f6*r4*r6 + 8*b1*f5*g1^2*r4*r6 - 8*b2*f6*g1^2*r4*r6 + 16*b1*f5*g0*g2*r4*r6 - 16*b2*f6*g0*g2*r4*r6 +   16*b1*f2*g2*g3*r4*r6 + 4*b1*g1^2*g2*g3*r4*r6 + 10*b1*g0*g2^2*g3*r4*r6 + 2*b2*g1*g2^2*g3*r4*r6 - 8*b2*f2*g3^2*r4*r6 + 2*b1*g0*g1*g3^2*r4*r6 - 2*b2*g0*g2*g3^2*r4*r6 +   24*b1*f3*f5*r4^2*r6 + 16*b1*f2*f6*r4^2*r6 - 24*b2*f3*f6*r4^2*r6 + 4*b1*f6*g1^2*r4^2*r6 + 8*b1*f6*g0*g2*r4^2*r6 + 12*b1*f5*g1*g2*r4^2*r6 - 12*b2*f6*g1*g2*r4^2*r6 +   12*b1*f5*g0*g3*r4^2*r6 - 12*b2*f6*g0*g3*r4^2*r6 + 12*b1*f3*g2*g3*r4^2*r6 + 6*b1*g1*g2^2*g3*r4^2*r6 + b2*g2^3*g3*r4^2*r6 + 4*b1*f2*g3^2*r4^2*r6 - 6*b2*f3*g3^2*r4^2*r6 +   b1*g1^2*g3^2*r4^2*r6 + 8*b1*g0*g2*g3^2*r4^2*r6 - 3*b2*g1*g2*g3^2*r4^2*r6 - 2*b2*g0*g3^3*r4^2*r6 + 32*b1*f4*f5*r4^3*r6 - 32*b2*f4*f6*r4^3*r6 + 8*b1*f5*g2^2*r4^3*r6 -   8*b2*f6*g2^2*r4^3*r6 + 16*b1*f5*g1*g3*r4^3*r6 - 16*b2*f6*g1*g3*r4^3*r6 + 16*b1*f4*g2*g3*r4^3*r6 + 5*b1*g2^3*g3*r4^3*r6 - 8*b2*f4*g3^2*r4^3*r6 + 8*b1*g1*g2*g3^2*r4^3*r6 -   2*b2*g2^2*g3^2*r4^3*r6 + b1*g0*g3^3*r4^3*r6 - 4*b2*g1*g3^3*r4^3*r6 + 40*b1*f5^2*r4^4*r6 - 40*b2*f5*f6*r4^4*r6 + 40*b1*f5*g2*g3*r4^4*r6 - 20*b2*f6*g2*g3*r4^4*r6 -   10*b2*f5*g3^2*r4^4*r6 + 10*b1*g2^2*g3^2*r4^4*r6 - 5*b2*g2*g3^3*r4^4*r6 + 48*b1*f5*f6*r4^5*r6 - 32*b2*f6^2*r4^5*r6 + 24*b1*f6*g2*g3*r4^5*r6 + 12*b1*f5*g3^2*r4^5*r6 -   16*b2*f6*g3^2*r4^5*r6 + 6*b1*g2*g3^3*r4^5*r6 - 2*b2*g3^4*r4^5*r6 + 16*b1*f6^2*r4^6*r6 + 8*b1*f6*g3^2*r4^6*r6 + b1*g3^4*r4^6*r6 + 2*b6*r6^2 - 24*b2*f3*f5*r6^2 +   8*b1*f1*f6*r6^2 + 4*b1*f6*g0*g1*r6^2 - 12*b2*f5*g1*g2*r6^2 - 12*b2*f5*g0*g3*r6^2 - 12*b2*f3*g2*g3*r6^2 - b1*g0*g2^2*g3*r6^2 - 7*b2*g1*g2^2*g3*r6^2 + 2*b1*f1*g3^2*r6^2 -   b2*g1^2*g3^2*r6^2 - 7*b2*g0*g2*g3^2*r6^2 + 24*b1*f3*f5*r4*r6^2 + 16*b1*f2*f6*r4*r6^2 - 24*b2*f3*f6*r4*r6^2 + 4*b1*f6*g1^2*r4*r6^2 + 8*b1*f6*g0*g2*r4*r6^2 +   12*b1*f5*g1*g2*r4*r6^2 - 12*b2*f6*g1*g2*r4*r6^2 + 12*b1*f5*g0*g3*r4*r6^2 - 12*b2*f6*g0*g3*r4*r6^2 + 12*b1*f3*g2*g3*r4*r6^2 + 6*b1*g1*g2^2*g3*r4*r6^2 +   b2*g2^3*g3*r4*r6^2 + 4*b1*f2*g3^2*r4*r6^2 - 6*b2*f3*g3^2*r4*r6^2 + b1*g1^2*g3^2*r4*r6^2 + 8*b1*g0*g2*g3^2*r4*r6^2 - 3*b2*g1*g2*g3^2*r4*r6^2 - 2*b2*g0*g3^3*r4*r6^2 +   48*b1*f3*f6*r4^2*r6^2 + 24*b1*f6*g1*g2*r4^2*r6^2 + 24*b1*f6*g0*g3*r4^2*r6^2 - 2*b1*g2^3*g3*r4^2*r6^2 + 12*b1*f3*g3^2*r4^2*r6^2 + 6*b1*g1*g2*g3^2*r4^2*r6^2 +   4*b1*g0*g3^3*r4^2*r6^2 + 32*b1*f4*f6*r4^3*r6^2 + 8*b1*f6*g2^2*r4^3*r6^2 + 16*b1*f6*g1*g3*r4^3*r6^2 + 8*b1*f4*g3^2*r4^3*r6^2 + 2*b1*g2^2*g3^2*r4^3*r6^2 +   4*b1*g1*g3^3*r4^3*r6^2 + 40*b1*f5*f6*r4^4*r6^2 + 20*b1*f6*g2*g3*r4^4*r6^2 + 10*b1*f5*g3^2*r4^4*r6^2 + 5*b1*g2*g3^3*r4^4*r6^2 + 32*b1*f6^2*r4^5*r6^2 +   16*b1*f6*g3^2*r4^5*r6^2 + 2*b1*g3^4*r4^5*r6^2 - 32*b2*f4*f5*r6^3 - 8*b2*f5*g2^2*r6^3 - 16*b2*f5*g1*g3*r6^3 - 16*b2*f4*g2*g3*r6^3 - 5*b2*g2^3*g3*r6^3 -   8*b2*g1*g2*g3^2*r6^3 - b2*g0*g3^3*r6^3 + 32*b1*f4*f5*r4*r6^3 - 32*b2*f4*f6*r4*r6^3 + 8*b1*f5*g2^2*r4*r6^3 - 8*b2*f6*g2^2*r4*r6^3 + 16*b1*f5*g1*g3*r4*r6^3 -   16*b2*f6*g1*g3*r4*r6^3 + 16*b1*f4*g2*g3*r4*r6^3 + 5*b1*g2^3*g3*r4*r6^3 - 8*b2*f4*g3^2*r4*r6^3 + 8*b1*g1*g2*g3^2*r4*r6^3 - 2*b2*g2^2*g3^2*r4*r6^3 + b1*g0*g3^3*r4*r6^3 -   4*b2*g1*g3^3*r4*r6^3 + 32*b1*f4*f6*r4^2*r6^3 + 8*b1*f6*g2^2*r4^2*r6^3 + 16*b1*f6*g1*g3*r4^2*r6^3 + 8*b1*f4*g3^2*r4^2*r6^3 + 2*b1*g2^2*g3^2*r4^2*r6^3 +   4*b1*g1*g3^3*r4^2*r6^3 - 40*b2*f5^2*r6^4 - 40*b2*f5*g2*g3*r6^4 - 10*b2*g2^2*g3^2*r6^4 + 40*b1*f5^2*r4*r6^4 - 40*b2*f5*f6*r4*r6^4 + 40*b1*f5*g2*g3*r4*r6^4 -   20*b2*f6*g2*g3*r4*r6^4 - 10*b2*f5*g3^2*r4*r6^4 + 10*b1*g2^2*g3^2*r4*r6^4 - 5*b2*g2*g3^3*r4*r6^4 + 40*b1*f5*f6*r4^2*r6^4 + 20*b1*f6*g2*g3*r4^2*r6^4 +   10*b1*f5*g3^2*r4^2*r6^4 + 5*b1*g2*g3^3*r4^2*r6^4 - 48*b2*f5*f6*r6^5 - 24*b2*f6*g2*g3*r6^5 - 12*b2*f5*g3^2*r6^5 - 6*b2*g2*g3^3*r6^5 + 48*b1*f5*f6*r4*r6^5 -   32*b2*f6^2*r4*r6^5 + 24*b1*f6*g2*g3*r4*r6^5 + 12*b1*f5*g3^2*r4*r6^5 - 16*b2*f6*g3^2*r4*r6^5 + 6*b1*g2*g3^3*r4*r6^5 - 2*b2*g3^4*r4*r6^5 + 32*b1*f6^2*r4^2*r6^5 +   16*b1*f6*g3^2*r4^2*r6^5 + 2*b1*g3^4*r4^2*r6^5 - 16*b2*f6^2*r6^6 - 8*b2*f6*g3^2*r6^6 - b2*g3^4*r6^6 + 16*b1*f6^2*r4*r6^6 + 8*b1*f6*g3^2*r4*r6^6 + b1*g3^4*r4*r6^6,  4*b2*f1 + 2*b2*g0*g1 - 2*b1*f1*r4 + 4*b2*f2*r4 - b1*g0*g1*r4 + b2*g1^2*r4 + 2*b2*g0*g2*r4 + 2*b5*r4^2 + 6*b2*f3*r4^2 - b1*g0*g2*r4^2 + 2*b2*g1*g2*r4^2 + 2*b2*g0*g3*r4^2 +   8*b2*f4*r4^3 + b2*g2^2*r4^3 + 3*b2*g1*g3*r4^3 + 10*b2*f5*r4^4 + 5*b2*g2*g3*r4^4 + 8*b2*f6*r4^5 + 2*b2*g3^2*r4^5 - 2*b1*f1*r6 + 4*b2*f2*r6 - b1*g0*g1*r6 + b2*g1^2*r6 +   2*b2*g0*g2*r6 - 4*b5*r4*r6 - 8*b1*f2*r4*r6 - 2*b1*g1^2*r4*r6 - 2*b1*g0*g2*r4*r6 + 2*b2*g1*g2*r4*r6 + 2*b2*g0*g3*r4*r6 - 6*b1*f3*r4^2*r6 - 3*b1*g1*g2*r4^2*r6 +   b2*g2^2*r4^2*r6 - 3*b1*g0*g3*r4^2*r6 + b2*g1*g3*r4^2*r6 - 8*b1*f4*r4^3*r6 - b1*g2^2*r4^3*r6 - 3*b1*g1*g3*r4^3*r6 - 10*b1*f5*r4^4*r6 + 4*b2*f6*r4^4*r6 -   5*b1*g2*g3*r4^4*r6 + b2*g3^2*r4^4*r6 - 8*b1*f6*r4^5*r6 - 2*b1*g3^2*r4^5*r6 + 2*b5*r6^2 + 6*b2*f3*r6^2 - b1*g0*g2*r6^2 + 2*b2*g1*g2*r6^2 + 2*b2*g0*g3*r6^2 -   6*b1*f3*r4*r6^2 - 3*b1*g1*g2*r4*r6^2 + b2*g2^2*r4*r6^2 - 3*b1*g0*g3*r4*r6^2 + b2*g1*g3*r4*r6^2 - 2*b1*g2^2*r4^2*r6^2 - 2*b1*g1*g3*r4^2*r6^2 - 4*b1*f6*r4^4*r6^2 -   b1*g3^2*r4^4*r6^2 + 8*b2*f4*r6^3 + b2*g2^2*r6^3 + 3*b2*g1*g3*r6^3 - 8*b1*f4*r4*r6^3 - b1*g2^2*r4*r6^3 - 3*b1*g1*g3*r4*r6^3 + 10*b2*f5*r6^4 + 5*b2*g2*g3*r6^4 -   10*b1*f5*r4*r6^4 + 4*b2*f6*r4*r6^4 - 5*b1*g2*g3*r4*r6^4 + b2*g3^2*r4*r6^4 - 4*b1*f6*r4^2*r6^4 - b1*g3^2*r4^2*r6^4 + 8*b2*f6*r6^5 + 2*b2*g3^2*r6^5 - 8*b1*f6*r4*r6^5 -   2*b1*g3^2*r4*r6^5, 2*b4 - b1*g0 - b2*g1 - b2*g2*r4 - b2*g3*r4^2 - b2*g2*r6 + b1*g2*r4*r6 - b2*g3*r4*r6 + b1*g3*r4^2*r6 - b2*g3*r6^2 + b1*g3*r4*r6^2,  b3 - b2*r4 - b2*r6 + b1*r4*r6]));
   E56 := Intersection(Des,Scheme(P5,[-16*b2*f1*f5 - 8*b2*f5*g0*g1 - 8*b2*f1*g2*g3 - 4*b2*g0*g1*g2*g3 + 8*b1*f1*f5*r5 - 16*b2*f2*f5*r5 - 8*b2*f1*f6*r5 + 4*b1*f5*g0*g1*r5 - 4*b2*f6*g0*g1*r5 - 4*b2*f5*g1^2*r5 -   8*b2*f5*g0*g2*r5 + 4*b1*f1*g2*g3*r5 - 8*b2*f2*g2*g3*r5 + 2*b1*g0*g1*g2*g3*r5 - 2*b2*g1^2*g2*g3*r5 - 4*b2*g0*g2^2*g3*r5 - 2*b2*f1*g3^2*r5 - b2*g0*g1*g3^2*r5 + 2*b6*r5^2 -   24*b2*f3*f5*r5^2 + 8*b1*f1*f6*r5^2 + 4*b1*f6*g0*g1*r5^2 - 12*b2*f5*g1*g2*r5^2 - 12*b2*f5*g0*g3*r5^2 - 12*b2*f3*g2*g3*r5^2 - b1*g0*g2^2*g3*r5^2 - 7*b2*g1*g2^2*g3*r5^2 +   2*b1*f1*g3^2*r5^2 - b2*g1^2*g3^2*r5^2 - 7*b2*g0*g2*g3^2*r5^2 - 32*b2*f4*f5*r5^3 - 8*b2*f5*g2^2*r5^3 - 16*b2*f5*g1*g3*r5^3 - 16*b2*f4*g2*g3*r5^3 - 5*b2*g2^3*g3*r5^3 -   8*b2*g1*g2*g3^2*r5^3 - b2*g0*g3^3*r5^3 - 40*b2*f5^2*r5^4 - 40*b2*f5*g2*g3*r5^4 - 10*b2*g2^2*g3^2*r5^4 - 48*b2*f5*f6*r5^5 - 24*b2*f6*g2*g3*r5^5 - 12*b2*f5*g3^2*r5^5 -   6*b2*g2*g3^3*r5^5 - 16*b2*f6^2*r5^6 - 8*b2*f6*g3^2*r5^6 - b2*g3^4*r5^6 + 8*b1*f1*f5*r6 - 16*b2*f2*f5*r6 - 8*b2*f1*f6*r6 + 4*b1*f5*g0*g1*r6 - 4*b2*f6*g0*g1*r6 -   4*b2*f5*g1^2*r6 - 8*b2*f5*g0*g2*r6 + 4*b1*f1*g2*g3*r6 - 8*b2*f2*g2*g3*r6 + 2*b1*g0*g1*g2*g3*r6 - 2*b2*g1^2*g2*g3*r6 - 4*b2*g0*g2^2*g3*r6 - 2*b2*f1*g3^2*r6 -   b2*g0*g1*g3^2*r6 - 4*b6*r5*r6 + 32*b1*f2*f5*r5*r6 - 32*b2*f2*f6*r5*r6 + 8*b1*f5*g1^2*r5*r6 - 8*b2*f6*g1^2*r5*r6 + 16*b1*f5*g0*g2*r5*r6 - 16*b2*f6*g0*g2*r5*r6 +   16*b1*f2*g2*g3*r5*r6 + 4*b1*g1^2*g2*g3*r5*r6 + 10*b1*g0*g2^2*g3*r5*r6 + 2*b2*g1*g2^2*g3*r5*r6 - 8*b2*f2*g3^2*r5*r6 + 2*b1*g0*g1*g3^2*r5*r6 - 2*b2*g0*g2*g3^2*r5*r6 +   24*b1*f3*f5*r5^2*r6 + 16*b1*f2*f6*r5^2*r6 - 24*b2*f3*f6*r5^2*r6 + 4*b1*f6*g1^2*r5^2*r6 + 8*b1*f6*g0*g2*r5^2*r6 + 12*b1*f5*g1*g2*r5^2*r6 - 12*b2*f6*g1*g2*r5^2*r6 +   12*b1*f5*g0*g3*r5^2*r6 - 12*b2*f6*g0*g3*r5^2*r6 + 12*b1*f3*g2*g3*r5^2*r6 + 6*b1*g1*g2^2*g3*r5^2*r6 + b2*g2^3*g3*r5^2*r6 + 4*b1*f2*g3^2*r5^2*r6 - 6*b2*f3*g3^2*r5^2*r6 +   b1*g1^2*g3^2*r5^2*r6 + 8*b1*g0*g2*g3^2*r5^2*r6 - 3*b2*g1*g2*g3^2*r5^2*r6 - 2*b2*g0*g3^3*r5^2*r6 + 32*b1*f4*f5*r5^3*r6 - 32*b2*f4*f6*r5^3*r6 + 8*b1*f5*g2^2*r5^3*r6 -   8*b2*f6*g2^2*r5^3*r6 + 16*b1*f5*g1*g3*r5^3*r6 - 16*b2*f6*g1*g3*r5^3*r6 + 16*b1*f4*g2*g3*r5^3*r6 + 5*b1*g2^3*g3*r5^3*r6 - 8*b2*f4*g3^2*r5^3*r6 + 8*b1*g1*g2*g3^2*r5^3*r6 -   2*b2*g2^2*g3^2*r5^3*r6 + b1*g0*g3^3*r5^3*r6 - 4*b2*g1*g3^3*r5^3*r6 + 40*b1*f5^2*r5^4*r6 - 40*b2*f5*f6*r5^4*r6 + 40*b1*f5*g2*g3*r5^4*r6 - 20*b2*f6*g2*g3*r5^4*r6 -   10*b2*f5*g3^2*r5^4*r6 + 10*b1*g2^2*g3^2*r5^4*r6 - 5*b2*g2*g3^3*r5^4*r6 + 48*b1*f5*f6*r5^5*r6 - 32*b2*f6^2*r5^5*r6 + 24*b1*f6*g2*g3*r5^5*r6 + 12*b1*f5*g3^2*r5^5*r6 -   16*b2*f6*g3^2*r5^5*r6 + 6*b1*g2*g3^3*r5^5*r6 - 2*b2*g3^4*r5^5*r6 + 16*b1*f6^2*r5^6*r6 + 8*b1*f6*g3^2*r5^6*r6 + b1*g3^4*r5^6*r6 + 2*b6*r6^2 - 24*b2*f3*f5*r6^2 +   8*b1*f1*f6*r6^2 + 4*b1*f6*g0*g1*r6^2 - 12*b2*f5*g1*g2*r6^2 - 12*b2*f5*g0*g3*r6^2 - 12*b2*f3*g2*g3*r6^2 - b1*g0*g2^2*g3*r6^2 - 7*b2*g1*g2^2*g3*r6^2 + 2*b1*f1*g3^2*r6^2 -   b2*g1^2*g3^2*r6^2 - 7*b2*g0*g2*g3^2*r6^2 + 24*b1*f3*f5*r5*r6^2 + 16*b1*f2*f6*r5*r6^2 - 24*b2*f3*f6*r5*r6^2 + 4*b1*f6*g1^2*r5*r6^2 + 8*b1*f6*g0*g2*r5*r6^2 +   12*b1*f5*g1*g2*r5*r6^2 - 12*b2*f6*g1*g2*r5*r6^2 + 12*b1*f5*g0*g3*r5*r6^2 - 12*b2*f6*g0*g3*r5*r6^2 + 12*b1*f3*g2*g3*r5*r6^2 + 6*b1*g1*g2^2*g3*r5*r6^2 +   b2*g2^3*g3*r5*r6^2 + 4*b1*f2*g3^2*r5*r6^2 - 6*b2*f3*g3^2*r5*r6^2 + b1*g1^2*g3^2*r5*r6^2 + 8*b1*g0*g2*g3^2*r5*r6^2 - 3*b2*g1*g2*g3^2*r5*r6^2 - 2*b2*g0*g3^3*r5*r6^2 +   48*b1*f3*f6*r5^2*r6^2 + 24*b1*f6*g1*g2*r5^2*r6^2 + 24*b1*f6*g0*g3*r5^2*r6^2 - 2*b1*g2^3*g3*r5^2*r6^2 + 12*b1*f3*g3^2*r5^2*r6^2 + 6*b1*g1*g2*g3^2*r5^2*r6^2 +   4*b1*g0*g3^3*r5^2*r6^2 + 32*b1*f4*f6*r5^3*r6^2 + 8*b1*f6*g2^2*r5^3*r6^2 + 16*b1*f6*g1*g3*r5^3*r6^2 + 8*b1*f4*g3^2*r5^3*r6^2 + 2*b1*g2^2*g3^2*r5^3*r6^2 +   4*b1*g1*g3^3*r5^3*r6^2 + 40*b1*f5*f6*r5^4*r6^2 + 20*b1*f6*g2*g3*r5^4*r6^2 + 10*b1*f5*g3^2*r5^4*r6^2 + 5*b1*g2*g3^3*r5^4*r6^2 + 32*b1*f6^2*r5^5*r6^2 +   16*b1*f6*g3^2*r5^5*r6^2 + 2*b1*g3^4*r5^5*r6^2 - 32*b2*f4*f5*r6^3 - 8*b2*f5*g2^2*r6^3 - 16*b2*f5*g1*g3*r6^3 - 16*b2*f4*g2*g3*r6^3 - 5*b2*g2^3*g3*r6^3 -   8*b2*g1*g2*g3^2*r6^3 - b2*g0*g3^3*r6^3 + 32*b1*f4*f5*r5*r6^3 - 32*b2*f4*f6*r5*r6^3 + 8*b1*f5*g2^2*r5*r6^3 - 8*b2*f6*g2^2*r5*r6^3 + 16*b1*f5*g1*g3*r5*r6^3 -   16*b2*f6*g1*g3*r5*r6^3 + 16*b1*f4*g2*g3*r5*r6^3 + 5*b1*g2^3*g3*r5*r6^3 - 8*b2*f4*g3^2*r5*r6^3 + 8*b1*g1*g2*g3^2*r5*r6^3 - 2*b2*g2^2*g3^2*r5*r6^3 + b1*g0*g3^3*r5*r6^3 -   4*b2*g1*g3^3*r5*r6^3 + 32*b1*f4*f6*r5^2*r6^3 + 8*b1*f6*g2^2*r5^2*r6^3 + 16*b1*f6*g1*g3*r5^2*r6^3 + 8*b1*f4*g3^2*r5^2*r6^3 + 2*b1*g2^2*g3^2*r5^2*r6^3 +   4*b1*g1*g3^3*r5^2*r6^3 - 40*b2*f5^2*r6^4 - 40*b2*f5*g2*g3*r6^4 - 10*b2*g2^2*g3^2*r6^4 + 40*b1*f5^2*r5*r6^4 - 40*b2*f5*f6*r5*r6^4 + 40*b1*f5*g2*g3*r5*r6^4 -   20*b2*f6*g2*g3*r5*r6^4 - 10*b2*f5*g3^2*r5*r6^4 + 10*b1*g2^2*g3^2*r5*r6^4 - 5*b2*g2*g3^3*r5*r6^4 + 40*b1*f5*f6*r5^2*r6^4 + 20*b1*f6*g2*g3*r5^2*r6^4 +   10*b1*f5*g3^2*r5^2*r6^4 + 5*b1*g2*g3^3*r5^2*r6^4 - 48*b2*f5*f6*r6^5 - 24*b2*f6*g2*g3*r6^5 - 12*b2*f5*g3^2*r6^5 - 6*b2*g2*g3^3*r6^5 + 48*b1*f5*f6*r5*r6^5 -   32*b2*f6^2*r5*r6^5 + 24*b1*f6*g2*g3*r5*r6^5 + 12*b1*f5*g3^2*r5*r6^5 - 16*b2*f6*g3^2*r5*r6^5 + 6*b1*g2*g3^3*r5*r6^5 - 2*b2*g3^4*r5*r6^5 + 32*b1*f6^2*r5^2*r6^5 +   16*b1*f6*g3^2*r5^2*r6^5 + 2*b1*g3^4*r5^2*r6^5 - 16*b2*f6^2*r6^6 - 8*b2*f6*g3^2*r6^6 - b2*g3^4*r6^6 + 16*b1*f6^2*r5*r6^6 + 8*b1*f6*g3^2*r5*r6^6 + b1*g3^4*r5*r6^6,  4*b2*f1 + 2*b2*g0*g1 - 2*b1*f1*r5 + 4*b2*f2*r5 - b1*g0*g1*r5 + b2*g1^2*r5 + 2*b2*g0*g2*r5 + 2*b5*r5^2 + 6*b2*f3*r5^2 - b1*g0*g2*r5^2 + 2*b2*g1*g2*r5^2 + 2*b2*g0*g3*r5^2 +   8*b2*f4*r5^3 + b2*g2^2*r5^3 + 3*b2*g1*g3*r5^3 + 10*b2*f5*r5^4 + 5*b2*g2*g3*r5^4 + 8*b2*f6*r5^5 + 2*b2*g3^2*r5^5 - 2*b1*f1*r6 + 4*b2*f2*r6 - b1*g0*g1*r6 + b2*g1^2*r6 +   2*b2*g0*g2*r6 - 4*b5*r5*r6 - 8*b1*f2*r5*r6 - 2*b1*g1^2*r5*r6 - 2*b1*g0*g2*r5*r6 + 2*b2*g1*g2*r5*r6 + 2*b2*g0*g3*r5*r6 - 6*b1*f3*r5^2*r6 - 3*b1*g1*g2*r5^2*r6 +   b2*g2^2*r5^2*r6 - 3*b1*g0*g3*r5^2*r6 + b2*g1*g3*r5^2*r6 - 8*b1*f4*r5^3*r6 - b1*g2^2*r5^3*r6 - 3*b1*g1*g3*r5^3*r6 - 10*b1*f5*r5^4*r6 + 4*b2*f6*r5^4*r6 -   5*b1*g2*g3*r5^4*r6 + b2*g3^2*r5^4*r6 - 8*b1*f6*r5^5*r6 - 2*b1*g3^2*r5^5*r6 + 2*b5*r6^2 + 6*b2*f3*r6^2 - b1*g0*g2*r6^2 + 2*b2*g1*g2*r6^2 + 2*b2*g0*g3*r6^2 -   6*b1*f3*r5*r6^2 - 3*b1*g1*g2*r5*r6^2 + b2*g2^2*r5*r6^2 - 3*b1*g0*g3*r5*r6^2 + b2*g1*g3*r5*r6^2 - 2*b1*g2^2*r5^2*r6^2 - 2*b1*g1*g3*r5^2*r6^2 - 4*b1*f6*r5^4*r6^2 -   b1*g3^2*r5^4*r6^2 + 8*b2*f4*r6^3 + b2*g2^2*r6^3 + 3*b2*g1*g3*r6^3 - 8*b1*f4*r5*r6^3 - b1*g2^2*r5*r6^3 - 3*b1*g1*g3*r5*r6^3 + 10*b2*f5*r6^4 + 5*b2*g2*g3*r6^4 -   10*b1*f5*r5*r6^4 + 4*b2*f6*r5*r6^4 - 5*b1*g2*g3*r5*r6^4 + b2*g3^2*r5*r6^4 - 4*b1*f6*r5^2*r6^4 - b1*g3^2*r5^2*r6^4 + 8*b2*f6*r6^5 + 2*b2*g3^2*r6^5 - 8*b1*f6*r5*r6^5 -   2*b1*g3^2*r5*r6^5, 2*b4 - b1*g0 - b2*g1 - b2*g2*r5 - b2*g3*r5^2 - b2*g2*r6 + b1*g2*r5*r6 - b2*g3*r5*r6 + b1*g3*r5^2*r6 - b2*g3*r6^2 + b1*g3*r5*r6^2,  b3 - b2*r5 - b2*r6 + b1*r5*r6]));
- // Tropesg
+ // Tropes
   T1 := Intersection(Des,Scheme(P5,[b2 - b1*r1, b3 - b1*r1^2, 2*b4 - b1*g0 - b1*g1*r1 - b1*g2*r1^2 - b1*g3*r1^3, 2*b6 + 8*b5*f5 + 8*b1*f1*f6 + 4*b1*f6*g0*g1 - 4*b1*f5*g0*g2 + 4*b5*g2*g3 - 3*b1*g0*g2^2*g3 +   2*b1*f1*g3^2 + 8*b5*f6*r1 + 16*b1*f2*f6*r1 + 4*b1*f6*g1^2*r1 + 4*b1*f6*g0*g2*r1 - 4*b1*f5*g1*g2*r1 - 4*b1*f5*g0*g3*r1 - 3*b1*g1*g2^2*g3*r1 + 2*b5*g3^2*r1 +   4*b1*f2*g3^2*r1 - 2*b1*g0*g2*g3^2*r1 + 24*b1*f3*f6*r1^2 + 8*b1*f6*g1*g2*r1^2 - 4*b1*f5*g2^2*r1^2 + 8*b1*f6*g0*g3*r1^2 - 4*b1*f5*g1*g3*r1^2 - 3*b1*g2^3*g3*r1^2 +   6*b1*f3*g3^2*r1^2 + b1*g0*g3^3*r1^2 + 32*b1*f4*f6*r1^3 + 4*b1*f6*g2^2*r1^3 + 12*b1*f6*g1*g3*r1^3 + 8*b1*f4*g3^2*r1^3 + b1*g2^2*g3^2*r1^3 + 3*b1*g1*g3^3*r1^3 +   24*b1*f5*f6*r1^4 + 12*b1*f6*g2*g3*r1^4 + 6*b1*f5*g3^2*r1^4 + 3*b1*g2*g3^3*r1^4 + 16*b1*f6^2*r1^5 + 8*b1*f6*g3^2*r1^5 + b1*g3^4*r1^5]));
   T2 := Intersection(Des,Scheme(P5,[b2 - b1*r2, b3 - b1*r2^2, 2*b4 - b1*g0 - b1*g1*r2 - b1*g2*r2^2 - b1*g3*r2^3, 2*b6 + 8*b5*f5 + 8*b1*f1*f6 + 4*b1*f6*g0*g1 - 4*b1*f5*g0*g2 + 4*b5*g2*g3 - 3*b1*g0*g2^2*g3 +   2*b1*f1*g3^2 + 8*b5*f6*r2 + 16*b1*f2*f6*r2 + 4*b1*f6*g1^2*r2 + 4*b1*f6*g0*g2*r2 - 4*b1*f5*g1*g2*r2 - 4*b1*f5*g0*g3*r2 - 3*b1*g1*g2^2*g3*r2 + 2*b5*g3^2*r2 +   4*b1*f2*g3^2*r2 - 2*b1*g0*g2*g3^2*r2 + 24*b1*f3*f6*r2^2 + 8*b1*f6*g1*g2*r2^2 - 4*b1*f5*g2^2*r2^2 + 8*b1*f6*g0*g3*r2^2 - 4*b1*f5*g1*g3*r2^2 - 3*b1*g2^3*g3*r2^2 +   6*b1*f3*g3^2*r2^2 + b1*g0*g3^3*r2^2 + 32*b1*f4*f6*r2^3 + 4*b1*f6*g2^2*r2^3 + 12*b1*f6*g1*g3*r2^3 + 8*b1*f4*g3^2*r2^3 + b1*g2^2*g3^2*r2^3 + 3*b1*g1*g3^3*r2^3 +   24*b1*f5*f6*r2^4 + 12*b1*f6*g2*g3*r2^4 + 6*b1*f5*g3^2*r2^4 + 3*b1*g2*g3^3*r2^4 + 16*b1*f6^2*r2^5 + 8*b1*f6*g3^2*r2^5 + b1*g3^4*r2^5]));
   T3 := Intersection(Des,Scheme(P5,[b2 - b1*r3, b3 - b1*r3^2, 2*b4 - b1*g0 - b1*g1*r3 - b1*g2*r3^2 - b1*g3*r3^3, 2*b6 + 8*b5*f5 + 8*b1*f1*f6 + 4*b1*f6*g0*g1 - 4*b1*f5*g0*g2 + 4*b5*g2*g3 - 3*b1*g0*g2^2*g3 +   2*b1*f1*g3^2 + 8*b5*f6*r3 + 16*b1*f2*f6*r3 + 4*b1*f6*g1^2*r3 + 4*b1*f6*g0*g2*r3 - 4*b1*f5*g1*g2*r3 - 4*b1*f5*g0*g3*r3 - 3*b1*g1*g2^2*g3*r3 + 2*b5*g3^2*r3 +   4*b1*f2*g3^2*r3 - 2*b1*g0*g2*g3^2*r3 + 24*b1*f3*f6*r3^2 + 8*b1*f6*g1*g2*r3^2 - 4*b1*f5*g2^2*r3^2 + 8*b1*f6*g0*g3*r3^2 - 4*b1*f5*g1*g3*r3^2 - 3*b1*g2^3*g3*r3^2 +   6*b1*f3*g3^2*r3^2 + b1*g0*g3^3*r3^2 + 32*b1*f4*f6*r3^3 + 4*b1*f6*g2^2*r3^3 + 12*b1*f6*g1*g3*r3^3 + 8*b1*f4*g3^2*r3^3 + b1*g2^2*g3^2*r3^3 + 3*b1*g1*g3^3*r3^3 +   24*b1*f5*f6*r3^4 + 12*b1*f6*g2*g3*r3^4 + 6*b1*f5*g3^2*r3^4 + 3*b1*g2*g3^3*r3^4 + 16*b1*f6^2*r3^5 + 8*b1*f6*g3^2*r3^5 + b1*g3^4*r3^5]));
@@ -539,7 +571,7 @@ function LinesNotCharacteristic2(J,Des0)
  return [EO,E12,E13,E14,E15,E16,E23,E24,E25,E26,E34,E35,E36,E45,E46,E56], [T1, T2, T3, T4, T5, T6, T123, T124, T125, T126, T134, T135, T136, T145, T146, T156], Des;
  end function;
 
-function LinesOrdinary(J, Des0)
+function LinesOrdinary(J, Des0) // This function computes the lines when the characteristic 2 and the curve is ordinary. In this case there are 4 exceptional lines and 4 tropes which are again defined over the field where all the Weierstrass points of the curve are defined, which is the splitting field of the polynomial g(x). All the lines line in the same hyperplane, so this function returns the hyperplane and the same surface but defined over the new field extension where all lines are defined.
  C0 := Curve(J);
  k := BaseRing(C0);
  f0,g0 := HyperellipticPolynomials(C0);
@@ -574,12 +606,12 @@ function LinesOrdinary(J, Des0)
   T1 := Intersection(Des,Scheme(P5,[a1^2*b1 + b3, b4 + b1*y1, a1*b1 + b2, b6 + a1*b5*g3^2 + b1*g3^2*(f1 + a1^2*f3 + a1^4*f5 + a1^5*g3^2 + a1^2*a2^2*a3*g3^2 + a1^2*a2*a3^2*g3^2 + a2^2*g3*y1 + a3^2*g3*y1)]));
   T2 := Intersection(Des,Scheme(P5,[a2^2*b1 + b3, b4 + b1*y2, a2*b1 + b2, b6 + a2*b5*g3^2 + b1*g3^2*(f1 + a2^2*f3 + a2^4*f5 + a2^5*g3^2 + a1^2*a2^2*a3*g3^2 + a1*a2^2*a3^2*g3^2 + a1^2*g3*y2 + a3^2*g3*y2)]));
   T3 := Intersection(Des,Scheme(P5,[a3^2*b1 + b3, b4 + b1*y3, a3*b1 + b2, b6 + a3*b5*g3^2 + b1*g3^2*(f1 + a3^2*f3 + a3^4*f5 + a1^2*a2*a3^2*g3^2 + a1*a2^2*a3^2*g3^2 + a3^5*g3^2 +  a1^2*g3*y3 + a2^2*g3*y3)]));
-  T123 := Intersection(Des,Scheme(P5,[b3*(a2*f1*y1 + a3*f1*y1 + a1*a2^2*f3*y1 + a2^2*a3*f3*y1 + a1*a3^2*f3*y1 + a2*a3^2*f3*y1 + a1*a2^4*f5*y1 + a2^4*a3*f5*y1 + a1*a3^4*f5*y1 + a2*a3^4*f5*y1 + a1*f1*y2 +     a3*f1*y2 + a1^2*a2*f3*y2 + a1^2*a3*f3*y2 + a1*a3^2*f3*y2 + a2*a3^2*f3*y2 + a1^4*a2*f5*y2 + a1^4*a3*f5*y2 + a1*a3^4*f5*y2 + a2*a3^4*f5*y2 + a1*f1*y3 + a2*f1*y3 +     a1^2*a2*f3*y3 + a1*a2^2*f3*y3 + a1^2*a3*f3*y3 + a2^2*a3*f3*y3 + a1^4*a2*f5*y3 + a1*a2^4*f5*y3 + a1^4*a3*f5*y3 + a2^4*a3*f5*y3) +   b1*(a1*a2^2*f1*y1 + a2^3*f1*y1 + a1*a3^2*f1*y1 + a3^3*f1*y1 + a2^3*a3^2*f3*y1 + a2^2*a3^3*f3*y1 + a1*a2^4*a3^2*f5*y1 + a2^4*a3^3*f5*y1 + a1*a2^2*a3^4*f5*y1 +     a2^3*a3^4*f5*y1 + a1^3*f1*y2 + a1^2*a2*f1*y2 + a2*a3^2*f1*y2 + a3^3*f1*y2 + a1^3*a3^2*f3*y2 + a1^2*a3^3*f3*y2 + a1^4*a2*a3^2*f5*y2 + a1^4*a3^3*f5*y2 + a1^3*a3^4*f5*y2 +     a1^2*a2*a3^4*f5*y2 + a1^3*f1*y3 + a2^3*f1*y3 + a1^2*a3*f1*y3 + a2^2*a3*f1*y3 + a1^3*a2^2*f3*y3 + a1^2*a2^3*f3*y3 + a1^4*a2^3*f5*y3 + a1^3*a2^4*f5*y3 +     a1^4*a2^2*a3*f5*y3 + a1^2*a2^4*a3*f5*y3) + (a1 + a2)*(a1 + a3)*(a2 + a3)*b4*(f1 + a1*a2*f3 + a1*a3*f3 + a2*a3*f3 + a1^2*a2^2*f5 + a1^2*a3^2*f5 + a2^2*a3^2*f5 +     a2^2*g3*y1 + a3^2*g3*y1 + a1^2*g3*y2 + a3^2*g3*y2 + a1^2*g3*y3 + a2^2*g3*y3),  b2*(a2*f1*y1 + a3*f1*y1 + a1*a2^2*f3*y1 + a2^2*a3*f3*y1 + a1*a3^2*f3*y1 + a2*a3^2*f3*y1 + a1*a2^4*f5*y1 + a2^4*a3*f5*y1 + a1*a3^4*f5*y1 + a2*a3^4*f5*y1 + a1*f1*y2 +     a3*f1*y2 + a1^2*a2*f3*y2 + a1^2*a3*f3*y2 + a1*a3^2*f3*y2 + a2*a3^2*f3*y2 + a1^4*a2*f5*y2 + a1^4*a3*f5*y2 + a1*a3^4*f5*y2 + a2*a3^4*f5*y2 + a1*f1*y3 + a2*f1*y3 +     a1^2*a2*f3*y3 + a1*a2^2*f3*y3 + a1^2*a3*f3*y3 + a2^2*a3*f3*y3 + a1^4*a2*f5*y3 + a1*a2^4*f5*y3 + a1^4*a3*f5*y3 + a2^4*a3*f5*y3) +   b1*(a1*a2*f1*y1 + a2^2*f1*y1 + a1*a3*f1*y1 + a3^2*f1*y1 + a1*a2^2*a3*f3*y1 + a1*a2*a3^2*f3*y1 + a1*a2^4*a3*f5*y1 + a2^4*a3^2*f5*y1 + a1*a2*a3^4*f5*y1 + a2^2*a3^4*f5*y1 +     a1^2*f1*y2 + a1*a2*f1*y2 + a2*a3*f1*y2 + a3^2*f1*y2 + a1^2*a2*a3*f3*y2 + a1*a2*a3^2*f3*y2 + a1^4*a2*a3*f5*y2 + a1^4*a3^2*f5*y2 + a1^2*a3^4*f5*y2 + a1*a2*a3^4*f5*y2 +     a1^2*f1*y3 + a2^2*f1*y3 + a1*a3*f1*y3 + a2*a3*f1*y3 + a1^2*a2*a3*f3*y3 + a1*a2^2*a3*f3*y3 + a1^4*a2^2*f5*y3 + a1^2*a2^4*f5*y3 + a1^4*a2*a3*f5*y3 + a1*a2^4*a3*f5*y3) +   (a1 + a2)*(a1 + a3)*(a2 + a3)*b4*(a1^2*a2*f5 + a1*a2^2*f5 + a1^2*a3*f5 + a2^2*a3*f5 + a1*a3^2*f5 + a2*a3^2*f5 + a2*g3*y1 + a3*g3*y1 + a1*g3*y2 + a3*g3*y2 + a1*g3*y3 +     a2*g3*y3), b5*(a2*f1*y1 + a3*f1*y1 + a1*a2^2*f3*y1 + a2^2*a3*f3*y1 + a1*a3^2*f3*y1 + a2*a3^2*f3*y1 + a1*a2^4*f5*y1 + a2^4*a3*f5*y1 + a1*a3^4*f5*y1 + a2*a3^4*f5*y1 +     a1*f1*y2 + a3*f1*y2 + a1^2*a2*f3*y2 + a1^2*a3*f3*y2 + a1*a3^2*f3*y2 + a2*a3^2*f3*y2 + a1^4*a2*f5*y2 + a1^4*a3*f5*y2 + a1*a3^4*f5*y2 + a2*a3^4*f5*y2 + a1*f1*y3 +     a2*f1*y3 + a1^2*a2*f3*y3 + a1*a2^2*f3*y3 + a1^2*a3*f3*y3 + a2^2*a3*f3*y3 + a1^4*a2*f5*y3 + a1*a2^4*f5*y3 + a1^4*a3*f5*y3 + a2^4*a3*f5*y3) +   b1*(f1^2*y1 + a2^2*f1*f3*y1 + a3^2*f1*f3*y1 + a2^2*a3^2*f3^2*y1 + a2^4*f1*f5*y1 + a3^4*f1*f5*y1 + a2^4*a3^2*f3*f5*y1 + a2^2*a3^4*f3*f5*y1 + a2^4*a3^4*f5^2*y1 +     a1^2*a2^3*f1*g3^2*y1 + a2^5*f1*g3^2*y1 + a1*a2^3*a3*f1*g3^2*y1 + a2^4*a3*f1*g3^2*y1 + a1^2*a3^3*f1*g3^2*y1 + a1*a2*a3^3*f1*g3^2*y1 + a2*a3^4*f1*g3^2*y1 +     a3^5*f1*g3^2*y1 + a1^2*a2^3*a3^2*f3*g3^2*y1 + a2^5*a3^2*f3*g3^2*y1 + a1^2*a2^2*a3^3*f3*g3^2*y1 + a2^4*a3^3*f3*g3^2*y1 + a2^3*a3^4*f3*g3^2*y1 + a2^2*a3^5*f3*g3^2*y1 +     a1^2*a2^4*a3^3*f5*g3^2*y1 + a1*a2^5*a3^3*f5*g3^2*y1 + a1^2*a2^3*a3^4*f5*g3^2*y1 + a1*a2^3*a3^5*f5*g3^2*y1 + f1^2*y2 + a1^2*f1*f3*y2 + a3^2*f1*f3*y2 + a1^2*a3^2*f3^2*y2 +     a1^4*f1*f5*y2 + a3^4*f1*f5*y2 + a1^4*a3^2*f3*f5*y2 + a1^2*a3^4*f3*f5*y2 + a1^4*a3^4*f5^2*y2 + a1^5*f1*g3^2*y2 + a1^3*a2^2*f1*g3^2*y2 + a1^4*a3*f1*g3^2*y2 +     a1^3*a2*a3*f1*g3^2*y2 + a1*a2*a3^3*f1*g3^2*y2 + a2^2*a3^3*f1*g3^2*y2 + a1*a3^4*f1*g3^2*y2 + a3^5*f1*g3^2*y2 + a1^5*a3^2*f3*g3^2*y2 + a1^3*a2^2*a3^2*f3*g3^2*y2 +     a1^4*a3^3*f3*g3^2*y2 + a1^2*a2^2*a3^3*f3*g3^2*y2 + a1^3*a3^4*f3*g3^2*y2 + a1^2*a3^5*f3*g3^2*y2 + a1^5*a2*a3^3*f5*g3^2*y2 + a1^4*a2^2*a3^3*f5*g3^2*y2 +     a1^3*a2^2*a3^4*f5*g3^2*y2 + a1^3*a2*a3^5*f5*g3^2*y2 + f1^2*y3 + a1^2*f1*f3*y3 + a2^2*f1*f3*y3 + a1^2*a2^2*f3^2*y3 + a1^4*f1*f5*y3 + a2^4*f1*f5*y3 + a1^4*a2^2*f3*f5*y3 +     a1^2*a2^4*f3*f5*y3 + a1^4*a2^4*f5^2*y3 + a1^5*f1*g3^2*y3 + a1^4*a2*f1*g3^2*y3 + a1*a2^4*f1*g3^2*y3 + a2^5*f1*g3^2*y3 + a1^3*a2*a3*f1*g3^2*y3 + a1*a2^3*a3*f1*g3^2*y3 +     a1^3*a3^2*f1*g3^2*y3 + a2^3*a3^2*f1*g3^2*y3 + a1^5*a2^2*f3*g3^2*y3 + a1^4*a2^3*f3*g3^2*y3 + a1^3*a2^4*f3*g3^2*y3 + a1^2*a2^5*f3*g3^2*y3 + a1^3*a2^2*a3^2*f3*g3^2*y3 +     a1^2*a2^3*a3^2*f3*g3^2*y3 + a1^5*a2^3*a3*f5*g3^2*y3 + a1^3*a2^5*a3*f5*g3^2*y3 + a1^4*a2^3*a3^2*f5*g3^2*y3 + a1^3*a2^4*a3^2*f5*g3^2*y3) +   b4*(f1^2 + a1^2*a2^2*f3^2 + a1^2*a3^2*f3^2 + a2^2*a3^2*f3^2 + a1^4*a2^2*f3*f5 + a1^2*a2^4*f3*f5 + a1^4*a3^2*f3*f5 + a2^4*a3^2*f3*f5 + a1^2*a3^4*f3*f5 + a2^2*a3^4*f3*f5 +     a1^4*a2^4*f5^2 + a1^4*a3^4*f5^2 + a2^4*a3^4*f5^2 + a1^4*a2*f1*g3^2 + a1^3*a2^2*f1*g3^2 + a1^2*a2^3*f1*g3^2 + a1*a2^4*f1*g3^2 + a1^4*a3*f1*g3^2 + a2^4*a3*f1*g3^2 +     a1^3*a3^2*f1*g3^2 + a2^3*a3^2*f1*g3^2 + a1^2*a3^3*f1*g3^2 + a2^2*a3^3*f1*g3^2 + a1*a3^4*f1*g3^2 + a2*a3^4*f1*g3^2 + a1^5*a2^2*f3*g3^2 + a1^4*a2^3*f3*g3^2 +     a1^3*a2^4*f3*g3^2 + a1^2*a2^5*f3*g3^2 + a1^5*a3^2*f3*g3^2 + a2^5*a3^2*f3*g3^2 + a1^4*a3^3*f3*g3^2 + a2^4*a3^3*f3*g3^2 + a1^3*a3^4*f3*g3^2 + a2^3*a3^4*f3*g3^2 +     a1^2*a3^5*f3*g3^2 + a2^2*a3^5*f3*g3^2 + a1^5*a2^3*a3*f5*g3^2 + a1^3*a2^5*a3*f5*g3^2 + a1^4*a2^3*a3^2*f5*g3^2 + a1^3*a2^4*a3^2*f5*g3^2 + a1^5*a2*a3^3*f5*g3^2 +     a1^4*a2^2*a3^3*f5*g3^2 + a1^2*a2^4*a3^3*f5*g3^2 + a1*a2^5*a3^3*f5*g3^2 + a1^3*a2^2*a3^4*f5*g3^2 + a1^2*a2^3*a3^4*f5*g3^2 + a1^3*a2*a3^5*f5*g3^2 + a1*a2^3*a3^5*f5*g3^2 +     a2^2*f1*g3*y1 + a3^2*f1*g3*y1 + a1^2*a2^2*f3*g3*y1 + a1^2*a3^2*f3*g3*y1 + a1^2*a2^4*f5*g3*y1 + a2^4*a3^2*f5*g3*y1 + a1^2*a3^4*f5*g3*y1 + a2^2*a3^4*f5*g3*y1 +     a1^3*a2^4*g3^3*y1 + a1*a2^6*g3^3*y1 + a1^3*a2^3*a3*g3^3*y1 + a2^6*a3*g3^3*y1 + a1^3*a2*a3^3*g3^3*y1 + a2^4*a3^3*g3^3*y1 + a1^3*a3^4*g3^3*y1 + a2^3*a3^4*g3^3*y1 +     a1*a3^6*g3^3*y1 + a2*a3^6*g3^3*y1 + a1^2*f1*g3*y2 + a3^2*f1*g3*y2 + a1^2*a2^2*f3*g3*y2 + a2^2*a3^2*f3*g3*y2 + a1^4*a2^2*f5*g3*y2 + a1^4*a3^2*f5*g3*y2 +     a1^2*a3^4*f5*g3*y2 + a2^2*a3^4*f5*g3*y2 + a1^6*a2*g3^3*y2 + a1^4*a2^3*g3^3*y2 + a1^6*a3*g3^3*y2 + a1^3*a2^3*a3*g3^3*y2 + a1^4*a3^3*g3^3*y2 + a1*a2^3*a3^3*g3^3*y2 +     a1^3*a3^4*g3^3*y2 + a2^3*a3^4*g3^3*y2 + a1*a3^6*g3^3*y2 + a2*a3^6*g3^3*y2 + a1^2*f1*g3*y3 + a2^2*f1*g3*y3 + a1^2*a3^2*f3*g3*y3 + a2^2*a3^2*f3*g3*y3 +     a1^4*a2^2*f5*g3*y3 + a1^2*a2^4*f5*g3*y3 + a1^4*a3^2*f5*g3*y3 + a2^4*a3^2*f5*g3*y3 + a1^6*a2*g3^3*y3 + a1^4*a2^3*g3^3*y3 + a1^3*a2^4*g3^3*y3 + a1*a2^6*g3^3*y3 +     a1^6*a3*g3^3*y3 + a2^6*a3*g3^3*y3 + a1^4*a3^3*g3^3*y3 + a1^3*a2*a3^3*g3^3*y3 + a1*a2^3*a3^3*g3^3*y3 + a2^4*a3^3*g3^3*y3),  b6*(a2*f1*y1 + a3*f1*y1 + a1*a2^2*f3*y1 + a2^2*a3*f3*y1 + a1*a3^2*f3*y1 + a2*a3^2*f3*y1 + a1*a2^4*f5*y1 + a2^4*a3*f5*y1 + a1*a3^4*f5*y1 + a2*a3^4*f5*y1 + a1*f1*y2 +     a3*f1*y2 + a1^2*a2*f3*y2 + a1^2*a3*f3*y2 + a1*a3^2*f3*y2 + a2*a3^2*f3*y2 + a1^4*a2*f5*y2 + a1^4*a3*f5*y2 + a1*a3^4*f5*y2 + a2*a3^4*f5*y2 + a1*f1*y3 + a2*f1*y3 +     a1^2*a2*f3*y3 + a1*a2^2*f3*y3 + a1^2*a3*f3*y3 + a2^2*a3*f3*y3 + a1^4*a2*f5*y3 + a1*a2^4*f5*y3 + a1^4*a3*f5*y3 + a2^4*a3*f5*y3) +   b1*g3^2*(a1*f1^2*y1 + a1*a2^2*f1*f3*y1 + a1*a3^2*f1*f3*y1 + a1*a2^2*a3^2*f3^2*y1 + a1*a2^4*f1*f5*y1 + a1*a3^4*f1*f5*y1 + a1*a2^4*a3^2*f3*f5*y1 + a1*a2^2*a3^4*f3*f5*y1 +     a1*a2^4*a3^4*f5^2*y1 + a1^2*a2^4*f1*g3^2*y1 + a1*a2^5*f1*g3^2*y1 + a1^3*a2^2*a3*f1*g3^2*y1 + a1^2*a2^3*a3*f1*g3^2*y1 + a1*a2^4*a3*f1*g3^2*y1 + a2^5*a3*f1*g3^2*y1 +     a1^3*a2*a3^2*f1*g3^2*y1 + a1*a2^3*a3^2*f1*g3^2*y1 + a1^2*a2*a3^3*f1*g3^2*y1 + a1*a2^2*a3^3*f1*g3^2*y1 + a1^2*a3^4*f1*g3^2*y1 + a1*a2*a3^4*f1*g3^2*y1 +     a1*a3^5*f1*g3^2*y1 + a2*a3^5*f1*g3^2*y1 + a1^3*a2^3*a3^2*f3*g3^2*y1 + a1*a2^5*a3^2*f3*g3^2*y1 + a1^3*a2^2*a3^3*f3*g3^2*y1 + a2^5*a3^3*f3*g3^2*y1 +     a1*a2^2*a3^5*f3*g3^2*y1 + a2^3*a3^5*f3*g3^2*y1 + a1^3*a2^5*a3^2*f5*g3^2*y1 + a1^2*a2^6*a3^2*f5*g3^2*y1 + a1^2*a2^5*a3^3*f5*g3^2*y1 + a1*a2^6*a3^3*f5*g3^2*y1 +     a1^3*a2^2*a3^5*f5*g3^2*y1 + a1^2*a2^3*a3^5*f5*g3^2*y1 + a1^2*a2^2*a3^6*f5*g3^2*y1 + a1*a2^3*a3^6*f5*g3^2*y1 + a2*f1^2*y2 + a1^2*a2*f1*f3*y2 + a2*a3^2*f1*f3*y2 +     a1^2*a2*a3^2*f3^2*y2 + a1^4*a2*f1*f5*y2 + a2*a3^4*f1*f5*y2 + a1^4*a2*a3^2*f3*f5*y2 + a1^2*a2*a3^4*f3*f5*y2 + a1^4*a2*a3^4*f5^2*y2 + a1^5*a2*f1*g3^2*y2 +     a1^4*a2^2*f1*g3^2*y2 + a1^5*a3*f1*g3^2*y2 + a1^4*a2*a3*f1*g3^2*y2 + a1^3*a2^2*a3*f1*g3^2*y2 + a1^2*a2^3*a3*f1*g3^2*y2 + a1^3*a2*a3^2*f1*g3^2*y2 +     a1*a2^3*a3^2*f1*g3^2*y2 + a1^2*a2*a3^3*f1*g3^2*y2 + a1*a2^2*a3^3*f1*g3^2*y2 + a1*a2*a3^4*f1*g3^2*y2 + a2^2*a3^4*f1*g3^2*y2 + a1*a3^5*f1*g3^2*y2 + a2*a3^5*f1*g3^2*y2 +     a1^5*a2*a3^2*f3*g3^2*y2 + a1^3*a2^3*a3^2*f3*g3^2*y2 + a1^5*a3^3*f3*g3^2*y2 + a1^2*a2^3*a3^3*f3*g3^2*y2 + a1^3*a3^5*f3*g3^2*y2 + a1^2*a2*a3^5*f3*g3^2*y2 +     a1^6*a2^2*a3^2*f5*g3^2*y2 + a1^5*a2^3*a3^2*f5*g3^2*y2 + a1^6*a2*a3^3*f5*g3^2*y2 + a1^5*a2^2*a3^3*f5*g3^2*y2 + a1^3*a2^2*a3^5*f5*g3^2*y2 + a1^2*a2^3*a3^5*f5*g3^2*y2 +     a1^3*a2*a3^6*f5*g3^2*y2 + a1^2*a2^2*a3^6*f5*g3^2*y2 + a3*f1^2*y3 + a1^2*a3*f1*f3*y3 + a2^2*a3*f1*f3*y3 + a1^2*a2^2*a3*f3^2*y3 + a1^4*a3*f1*f5*y3 + a2^4*a3*f1*f5*y3 +     a1^4*a2^2*a3*f3*f5*y3 + a1^2*a2^4*a3*f3*f5*y3 + a1^4*a2^4*a3*f5^2*y3 + a1^5*a2*f1*g3^2*y3 + a1*a2^5*f1*g3^2*y3 + a1^5*a3*f1*g3^2*y3 + a1^4*a2*a3*f1*g3^2*y3 +     a1^3*a2^2*a3*f1*g3^2*y3 + a1^2*a2^3*a3*f1*g3^2*y3 + a1*a2^4*a3*f1*g3^2*y3 + a2^5*a3*f1*g3^2*y3 + a1^4*a3^2*f1*g3^2*y3 + a1^3*a2*a3^2*f1*g3^2*y3 +     a1*a2^3*a3^2*f1*g3^2*y3 + a2^4*a3^2*f1*g3^2*y3 + a1^2*a2*a3^3*f1*g3^2*y3 + a1*a2^2*a3^3*f1*g3^2*y3 + a1^5*a2^3*f3*g3^2*y3 + a1^3*a2^5*f3*g3^2*y3 +     a1^5*a2^2*a3*f3*g3^2*y3 + a1^2*a2^5*a3*f3*g3^2*y3 + a1^3*a2^2*a3^3*f3*g3^2*y3 + a1^2*a2^3*a3^3*f3*g3^2*y3 + a1^6*a2^3*a3*f5*g3^2*y3 + a1^3*a2^6*a3*f5*g3^2*y3 +     a1^6*a2^2*a3^2*f5*g3^2*y3 + a1^5*a2^3*a3^2*f5*g3^2*y3 + a1^3*a2^5*a3^2*f5*g3^2*y3 + a1^2*a2^6*a3^2*f5*g3^2*y3 + a1^5*a2^2*a3^3*f5*g3^2*y3 + a1^2*a2^5*a3^3*f5*g3^2*y3) +   b4*g3^2*(a1*f1^2 + a2*f1^2 + a3*f1^2 + a1^2*a2*f1*f3 + a1*a2^2*f1*f3 + a1^2*a3*f1*f3 + a2^2*a3*f1*f3 + a1*a3^2*f1*f3 + a2*a3^2*f1*f3 + a1^2*a2^2*a3*f3^2 +     a1^2*a2*a3^2*f3^2 + a1*a2^2*a3^2*f3^2 + a1^4*a2*f1*f5 + a1*a2^4*f1*f5 + a1^4*a3*f1*f5 + a2^4*a3*f1*f5 + a1*a3^4*f1*f5 + a2*a3^4*f1*f5 + a1^4*a2^2*a3*f3*f5 +     a1^2*a2^4*a3*f3*f5 + a1^4*a2*a3^2*f3*f5 + a1*a2^4*a3^2*f3*f5 + a1^2*a2*a3^4*f3*f5 + a1*a2^2*a3^4*f3*f5 + a1^4*a2^4*a3*f5^2 + a1^4*a2*a3^4*f5^2 + a1*a2^4*a3^4*f5^2 +     a1^4*a2^2*f1*g3^2 + a1^2*a2^4*f1*g3^2 + a1^3*a2^2*a3*f1*g3^2 + a1^2*a2^3*a3*f1*g3^2 + a1^4*a3^2*f1*g3^2 + a1^3*a2*a3^2*f1*g3^2 + a1*a2^3*a3^2*f1*g3^2 +     a2^4*a3^2*f1*g3^2 + a1^2*a2*a3^3*f1*g3^2 + a1*a2^2*a3^3*f1*g3^2 + a1^2*a3^4*f1*g3^2 + a2^2*a3^4*f1*g3^2 + a1^5*a2^3*f3*g3^2 + a1^3*a2^5*f3*g3^2 + a1^5*a2^2*a3*f3*g3^2 +     a1^2*a2^5*a3*f3*g3^2 + a1^5*a2*a3^2*f3*g3^2 + a1*a2^5*a3^2*f3*g3^2 + a1^5*a3^3*f3*g3^2 + a2^5*a3^3*f3*g3^2 + a1^3*a3^5*f3*g3^2 + a1^2*a2*a3^5*f3*g3^2 +     a1*a2^2*a3^5*f3*g3^2 + a2^3*a3^5*f3*g3^2 + a1^6*a2^3*a3*f5*g3^2 + a1^3*a2^6*a3*f5*g3^2 + a1^6*a2*a3^3*f5*g3^2 + a1*a2^6*a3^3*f5*g3^2 + a1^3*a2*a3^6*f5*g3^2 +     a1*a2^3*a3^6*f5*g3^2 + a1*a2^2*f1*g3*y1 + a2^3*f1*g3*y1 + a2^2*a3*f1*g3*y1 + a1*a3^2*f1*g3*y1 + a2*a3^2*f1*g3*y1 + a3^3*f1*g3*y1 + a1^3*a2^2*f3*g3*y1 +     a1*a2^4*f3*g3*y1 + a2^4*a3*f3*g3*y1 + a1^3*a3^2*f3*g3*y1 + a2^3*a3^2*f3*g3*y1 + a2^2*a3^3*f3*g3*y1 + a1*a3^4*f3*g3*y1 + a2*a3^4*f3*g3*y1 + a1^3*a2^4*f5*g3*y1 +     a1*a2^6*f5*g3*y1 + a2^6*a3*f5*g3*y1 + a2^4*a3^3*f5*g3*y1 + a1^3*a3^4*f5*g3*y1 + a2^3*a3^4*f5*g3*y1 + a1*a3^6*f5*g3*y1 + a2*a3^6*f5*g3*y1 + a1^3*a2^5*g3^3*y1 +     a1^2*a2^6*g3^3*y1 + a1^4*a2^3*a3*g3^3*y1 + a1^2*a2^5*a3*g3^3*y1 + a1^3*a2^3*a3^2*g3^3*y1 + a1^2*a2^4*a3^2*g3^3*y1 + a1*a2^5*a3^2*g3^3*y1 + a2^6*a3^2*g3^3*y1 +     a1^4*a2*a3^3*g3^3*y1 + a1^3*a2^2*a3^3*g3^3*y1 + a1*a2^4*a3^3*g3^3*y1 + a2^5*a3^3*g3^3*y1 + a1^2*a2^2*a3^4*g3^3*y1 + a1*a2^3*a3^4*g3^3*y1 + a1^3*a3^5*g3^3*y1 +     a1^2*a2*a3^5*g3^3*y1 + a1*a2^2*a3^5*g3^3*y1 + a2^3*a3^5*g3^3*y1 + a1^2*a3^6*g3^3*y1 + a2^2*a3^6*g3^3*y1 + a1^3*f1*g3*y2 + a1^2*a2*f1*g3*y2 + a1^2*a3*f1*g3*y2 +     a1*a3^2*f1*g3*y2 + a2*a3^2*f1*g3*y2 + a3^3*f1*g3*y2 + a1^4*a2*f3*g3*y2 + a1^2*a2^3*f3*g3*y2 + a1^4*a3*f3*g3*y2 + a1^3*a3^2*f3*g3*y2 + a2^3*a3^2*f3*g3*y2 +     a1^2*a3^3*f3*g3*y2 + a1*a3^4*f3*g3*y2 + a2*a3^4*f3*g3*y2 + a1^6*a2*f5*g3*y2 + a1^4*a2^3*f5*g3*y2 + a1^6*a3*f5*g3*y2 + a1^4*a3^3*f5*g3*y2 + a1^3*a3^4*f5*g3*y2 +     a2^3*a3^4*f5*g3*y2 + a1*a3^6*f5*g3*y2 + a2*a3^6*f5*g3*y2 + a1^6*a2^2*g3^3*y2 + a1^5*a2^3*g3^3*y2 + a1^5*a2^2*a3*g3^3*y2 + a1^3*a2^4*a3*g3^3*y2 + a1^6*a3^2*g3^3*y2 +     a1^5*a2*a3^2*g3^3*y2 + a1^4*a2^2*a3^2*g3^3*y2 + a1^3*a2^3*a3^2*g3^3*y2 + a1^5*a3^3*g3^3*y2 + a1^4*a2*a3^3*g3^3*y2 + a1^2*a2^3*a3^3*g3^3*y2 + a1*a2^4*a3^3*g3^3*y2 +     a1^3*a2*a3^4*g3^3*y2 + a1^2*a2^2*a3^4*g3^3*y2 + a1^3*a3^5*g3^3*y2 + a1^2*a2*a3^5*g3^3*y2 + a1*a2^2*a3^5*g3^3*y2 + a2^3*a3^5*g3^3*y2 + a1^2*a3^6*g3^3*y2 +     a2^2*a3^6*g3^3*y2 + a1^3*f1*g3*y3 + a1^2*a2*f1*g3*y3 + a1*a2^2*f1*g3*y3 + a2^3*f1*g3*y3 + a1^2*a3*f1*g3*y3 + a2^2*a3*f1*g3*y3 + a1^4*a2*f3*g3*y3 + a1^3*a2^2*f3*g3*y3 +     a1^2*a2^3*f3*g3*y3 + a1*a2^4*f3*g3*y3 + a1^4*a3*f3*g3*y3 + a2^4*a3*f3*g3*y3 + a1^2*a3^3*f3*g3*y3 + a2^2*a3^3*f3*g3*y3 + a1^6*a2*f5*g3*y3 + a1^4*a2^3*f5*g3*y3 +     a1^3*a2^4*f5*g3*y3 + a1*a2^6*f5*g3*y3 + a1^6*a3*f5*g3*y3 + a2^6*a3*f5*g3*y3 + a1^4*a3^3*f5*g3*y3 + a2^4*a3^3*f5*g3*y3 + a1^6*a2^2*g3^3*y3 + a1^5*a2^3*g3^3*y3 +     a1^3*a2^5*g3^3*y3 + a1^2*a2^6*g3^3*y3 + a1^5*a2^2*a3*g3^3*y3 + a1^4*a2^3*a3*g3^3*y3 + a1^3*a2^4*a3*g3^3*y3 + a1^2*a2^5*a3*g3^3*y3 + a1^6*a3^2*g3^3*y3 +     a1^5*a2*a3^2*g3^3*y3 + a1^4*a2^2*a3^2*g3^3*y3 + a1^2*a2^4*a3^2*g3^3*y3 + a1*a2^5*a3^2*g3^3*y3 + a2^6*a3^2*g3^3*y3 + a1^5*a3^3*g3^3*y3 + a1^3*a2^2*a3^3*g3^3*y3 +     a1^2*a2^3*a3^3*g3^3*y3 + a2^5*a3^3*g3^3*y3 + a1^3*a2*a3^4*g3^3*y3 + a1*a2^3*a3^4*g3^3*y3)]));
+  T123 := Intersection(Des,Scheme(P5,[a2*a3*b1 + a2*b2 + a3*b2 + b3, a1*a2*b1*f1 + a2^2*b1*f1 +  a1*a3*b1*f1 + a2*a3*b1*f1 + a3^2*b1*f1 + b3*f1 +   a2^2*a3^2*b1*f3 + a1*a2*b3*f3 + a1*a3*b3*f3 + a2*a3*b3*f3 +   a1*a2^3*a3^2*b1*f5 + a1*a2^2*a3^3*b1*f5 + a2^3*a3^3*b1*f5 +   a1*a2^3*b3*f5 + a1*a2^2*a3*b3*f5 + a2^3*a3*b3*f5 +   a1*a2*a3^2*b3*f5 + a2^2*a3^2*b3*f5 + a1*a3^3*b3*f5 +   a2*a3^3*b3*f5 + a1^2*a2^2*b4*g3 + a1*a2^3*b4*g3 +   a1*a2^2*a3*b4*g3 + a2^3*a3*b4*g3 + a1^2*a3^2*b4*g3 +   a1*a2*a3^2*b4*g3 + a1*a3^3*b4*g3 + a2*a3^3*b4*g3,  a1^2*a2*b5 + a1*a2^2*b5 + a1^2*a3*b5 + a2^2*a3*b5 +   a1*a3^2*b5 + a2*a3^2*b5 + a1^2*b1*f1 + a2^2*b1*f1 +   a3^2*b1*f1 + b3*f1 + a2^2*a3^2*b1*f3 + a1^2*b3*f3 +   a1^2*a2^2*a3^2*b1*f5 + a1^2*a2^2*b3*f5 + a1^2*a3^2*b3*f5 +   a2^2*a3^2*b3*f5 + a1^3*a2^2*a3^2*b1*g3^2 +   a1*a2^4*a3^2*b1*g3^2 + a1*a2^3*a3^3*b1*g3^2 +   a2^4*a3^3*b1*g3^2 + a1*a2^2*a3^4*b1*g3^2 + a2^3*a3^4*b1*g3^2 +   a1^3*a2^2*b3*g3^2 + a1*a2^4*b3*g3^2 + a1^3*a2*a3*b3*g3^2 +   a2^4*a3*b3*g3^2 + a1^3*a3^2*b3*g3^2 + a1*a2^2*a3^2*b3*g3^2 +   a1*a3^4*b3*g3^2 + a2*a3^4*b3*g3^2, a1^2*a2*b6 + a1*a2^2*b6 +   a1^2*a3*b6 + a2^2*a3*b6 + a1*a3^2*b6 + a2*a3^2*b6 +   a1^3*b1*f1*g3^2 + a2^3*b1*f1*g3^2 + a3^3*b1*f1*g3^2 +   a1*b3*f1*g3^2 + a2*b3*f1*g3^2 + a3*b3*f1*g3^2 +   a1*a2^2*a3^2*b1*f3*g3^2 + a2^3*a3^2*b1*f3*g3^2 +   a2^2*a3^3*b1*f3*g3^2 + a1^3*b3*f3*g3^2 + a1*a2^2*b3*f3*g3^2 +   a2^2*a3*b3*f3*g3^2 + a1*a3^2*b3*f3*g3^2 + a2*a3^2*b3*f3*g3^2 +   a1^3*a2^2*a3^2*b1*f5*g3^2 + a1*a2^4*a3^2*b1*f5*g3^2 +   a2^4*a3^3*b1*f5*g3^2 + a1*a2^2*a3^4*b1*f5*g3^2 +   a2^3*a3^4*b1*f5*g3^2 + a1^3*a2^2*b3*f5*g3^2 +   a1*a2^4*b3*f5*g3^2 + a2^4*a3*b3*f5*g3^2 +   a1^3*a3^2*b3*f5*g3^2 + a1*a2^2*a3^2*b3*f5*g3^2 +   a1*a3^4*b3*f5*g3^2 + a2*a3^4*b3*f5*g3^2 +   a1^4*a2^2*a3^2*b1*g3^4 + a1^3*a2^3*a3^2*b1*g3^4 +   a1^3*a2^2*a3^3*b1*g3^4 + a1*a2^4*a3^3*b1*g3^4 +   a1*a2^3*a3^4*b1*g3^4 + a2^4*a3^4*b1*g3^4 + a1^3*a2^3*b3*g3^4 +   a1^2*a2^4*b3*g3^4 + a1^4*a2*a3*b3*g3^4 +   a1^2*a2^3*a3*b3*g3^4 + a1*a2^3*a3^2*b3*g3^4 +   a2^4*a3^2*b3*g3^4 + a1^3*a3^3*b3*g3^4 + a1^2*a2*a3^3*b3*g3^4 +   a1*a2^2*a3^3*b3*g3^4 + a2^3*a3^3*b3*g3^4 + a1^2*a3^4*b3*g3^4 +   a2^2*a3^4*b3*g3^4]));
  plane := Intersection(Des,Scheme(P5,(a1 + a2)*(a1 + a3)*(a2 + a3)*b4 + b3*(a2*y1 + a3*y1 + a1*y2 + a3*y2 + a1*y3 + a2*y3) + b2*(a2^2*y1 + a3^2*y1 + a1^2*y2 + a3^2*y2 + a1^2*y3 + a2^2*y3) +  b1*(a2^2*a3*y1 + a2*a3^2*y1 + a1^2*a3*y2 + a1*a3^2*y2 + a1^2*a2*y3 + a1*a2^2*y3)));
  return [EO,E12,E13,E23], [T1,T2,T3,T123], plane, Des;
  end function;
 
-function LinesAlmostOrdinary(J, Des)
+function LinesAlmostOrdinary(J, Des) // This function computes the lines when the characteristic 2 and the curve is almost ordinary. In this case there are 2 exceptional lines and 2 tropes which are defined over the base field. All the lines lie in a codimension 3 linear subspace, so this function also returns it.
  C := Curve(J);
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
@@ -607,7 +639,7 @@ function LinesAlmostOrdinary(J, Des)
  return [EO,E12], [T1,T2], planes;
  end function;
 
- function LinesSupersingular(J,Des)
+ function LinesSupersingular(J,Des) // This function computes the lines when the characteristic 2 and the curve is supersingular. In this case there is only one exceptional lines and one trope which are defined over the base field. All the lines lie in a codimension 3 linear subspace, so this function also returns it.
  C := Curve(J);
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
@@ -631,29 +663,8 @@ function LinesAlmostOrdinary(J, Des)
  return [EO], [T1], plane;
  end function;
 
-function IntersectionWithSystem(J, Jac)
- C := Curve(J);
- k := BaseRing(C);
- f,g := HyperellipticPolynomials(C);
- f0 := Coefficient(f,0);
- f1 := Coefficient(f,1);
- f2 := Coefficient(f,2);
- f3 := Coefficient(f,3);
- f4 := Coefficient(f,4);  
- f5 := Coefficient(f,5);
- f6 := Coefficient(f,6);
- g0 := Coefficient(g,0);
- g1 := Coefficient(g,1);
- g2 := Coefficient(g,2);
- g3 := Coefficient(g,3);
- Pr<v1, v2, v3, v4, v5, v6, k11, k12, k13, k14, k22, k23, k24, k33, k34, k44> := AmbientSpace(Jac);
- S := Scheme(Jac, [g1*k11 + g2*k12 + g3*k13 + g3*k22 + 2*v1, g0*k11 + g2*k13 + g3*k23 + 2*v2, g0*k12 + g1*k13 + g3*k33 + 2*v3, f1*k11 + f3*k13 + k24 + f5*k33 + 2*v4, f3*g0*k11 + f1*g3*k12 + (f3*g2 + g0*g2*g3)*k13 + g1*k14 + (f5*g0 + g0*g2*g3)*k22 + (f5*g1 + g1*g2*g3)*k23 + g2*k24 + g2^2*g3*k33 + g3*k34 + 2*v5, (f1*g2^2*g3 + f1*g1*g3^2 + g0^2*g2*g3^2)*k11 + f1*g2*g3^2*k12 + (f3*g2^2*g3 + g0*g2^2*g3^2 + g0*g1*g3^3)*k13 + g0*g3^2*k14 + (f1*g3^3 + g0*g1*g3^3)*k22 + (f5*g0*g3^2 + g1^2*g3^3 + g0*g2*g3^3)*k23 + g2^2*g3*k24 + (f5*g2^2*g3 + f5*g1*g3^2 + f3*g3^3 + g1*g2*g3^3)*k33 + g2*g3^2*k34 + 2*v6]);
-return S;
-end function;
-
-
-function WeddleSurface(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Weddle surface associated to the trope E_O
- C := Curve(J);
+function WeddleSurface(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Weddle surface associated to the trope E_O. The equation of this and all the equations refering to 
+ C := Genus2Model(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P3<b1, b2, b3, b4> := ProjectiveSpace(k,3); 
@@ -673,7 +684,7 @@ function WeddleSurface(J) // Given the Jacobian of a genus 2 curve, this compute
  return S;
 end function;
 
-function WeddleQuotient(J, Des, Wed)
+function WeddleQuotient(J, Des, Wed) // Given the Jacobian of a genus 2 curve and its associated models of the desinglarised Kummer and the Weddle, returns the map from the Kummer to the Weddle
  C := Curve(J);
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
@@ -682,7 +693,7 @@ function WeddleQuotient(J, Des, Wed)
 return phi;
 end function;
 
-function BlowupEO(Des)
+function BlowupEO(Des) // This is the explicit blow-up of the exceptional line associated to the origin with respect to the group law of the Jacobian. The function returns the blow-up variety, which lies in P^5xP^3 and the blow-up map.
  K := BaseRing(Des);
  ProdProj<b1, b2, b3, b4, b5, b6, w1, w2, w3, w4> := ProductProjectiveSpace(K, [5,3]);
  P5<b1, b2, b3, b4, b5, b6> := AmbientSpace(Des); 
