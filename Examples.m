@@ -14,7 +14,7 @@ Kum5 := GeneralKummerSurface(J5);
 Jac5 := GeneralJacobianSurface(J5);
 
 // Example in characteristic zero
-Q0<r> := ext<Rationals() | Polynomial([-1,-1,1])>;;
+Q0<r> := ext<Rationals() | Polynomial([-1,-1,1])>;
 PolQ0<x> := PolynomialRing(Q0);
 f0 := -(20*r*x + 5*r^2*x - 20*x^2 - 39*r*x^2 - 7*r^2*x^2 + 34*x^3 + 24*r*x^3 + 2*r^2*x^3 - 17*x^4 - 6*r*x^4 + 4*x^5 + r*x^5);
 g0 := -(r*x) + x^2 + r*x^2 + x^3;

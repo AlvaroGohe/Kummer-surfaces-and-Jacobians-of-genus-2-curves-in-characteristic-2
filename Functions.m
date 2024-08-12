@@ -10,7 +10,7 @@
 // email: alvaro.gohe@gmail.com
 
 // This function takes any hyperelliptic genus 2 curve and transforms it into one of the form y^2+g(x)y=f(x) with deg(g)=3.
-function Genus2Model(C)
+function GenusTwoModel(C)
  k := BaseRing(C);
  K<x> := PolynomialRing(k);
  if Type(k) eq FldRat then
@@ -67,7 +67,7 @@ end function;
 
 // Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Kummer surface. This code was written by Muller, and I have only changed a few bits, mainly to uniform notation.
 function GeneralKummerSurface(J)
- C :=  Genus2Model(Curve(J));
+ C :=  GenusTwoModel(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P<k1,k2,k3,k4> := ProjectiveSpace(k,3);
@@ -94,7 +94,7 @@ end function;
 
 // Given the Jacobian corresponding to a genus 2 curve, this function computes the associated Jacobian surface embedded in P^15. The equations have been computed in the Mathematica notebook titled Part 2, and the equations are also independently in the text file "72 equations of the Jacobian.txt".
 function GeneralJacobianSurface(J)
- C := Genus2Model(Curve(J));
+ C := GenusTwoModel(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P15<v1, v2, v3, v4, v5, v6, k11, k12, k13, k14, k22, k23, k24, k33, k34, k44> := ProjectiveSpace(k,15); 
@@ -443,7 +443,7 @@ return Gamma(Jac, n*PJ);
 end function;
 
 function DesingularisedKummer(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Kummer surface as the intersection of three quadrics in P5. It is called DesingularisedKummer, because if the characteristic of the base field is not 2, this is smooth. In characteristic 2, geometrically, it will have 12, 4 or 1 singular point depending on whether the input Jacobian is ordinary, almost ordinary or supersingular (i.e. the p-rank is 2, 1 or 0).
- C := Genus2Model(Curve(J));2, 
+ C := GenusTwoModel(Curve(J));2, 
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P5<b1, b2, b3, b4, b5, b6> := ProjectiveSpace(k,5); 
@@ -664,7 +664,7 @@ function LinesAlmostOrdinary(J, Des) // This function computes the lines when th
  end function;
 
 function WeddleSurface(J) // Given the Jacobian of a genus 2 curve, this computes a model of its Weddle surface associated to the trope E_O. The equation of this and all the equations refering to 
- C := Genus2Model(Curve(J));
+ C := GenusTwoModel(Curve(J));
  k := BaseRing(C);
  f,g := HyperellipticPolynomials(C);
  P3<b1, b2, b3, b4> := ProjectiveSpace(k,3); 
@@ -703,7 +703,7 @@ function BlowupEO(Des) // This is the explicit blow-up of the exceptional line a
  return S, newphi;
 end function;
 
-function BlowupE12(J, Des0)
+function BlowupE12Alm(J, Des0) // This does the same as the previous function, but blowing-up intead a exceptional line associated to the exceptional line corresponding to the non-trivial 2-torsion point in an almost ordinary Jacobian.
  C0 := Curve(J);
  k := BaseRing(C0);
  f0,g0 := HyperellipticPolynomials(C0);
@@ -733,7 +733,7 @@ function BlowupE12(J, Des0)
  return S, phi;
 end function;
 
-function BlowupEOE12(J, Des0)
+function BlowupEOE12(J, Des0) // This is the blow-up of the two exceptional lines of an almost ordinary Jacobian.
  C0 := Curve(J);
  k := BaseRing(C0);
  f0,g0 := HyperellipticPolynomials(C0);
@@ -763,7 +763,7 @@ function BlowupEOE12(J, Des0)
  return S, phi;
 end function;
 
-// Warning, the following function takes a long time! 15 minutes in Warwick's
+// Warning, the following function takes a long time to evaluate on an example! 15 minutes in Warwick's computer. This blows-up the 4 lines exceptional lines of an ordinary Kummer surface defined over a field of characteristic two.
 function DesingularisedOrdinaryKummer(J, Des0)
  C0 := Curve(J);
  k := BaseRing(C0);
@@ -796,7 +796,8 @@ function DesingularisedOrdinaryKummer(J, Des0)
  S := Image(phi);
 return phi, S;
 end function;
-// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers. For some reason that I don't fully understand, the two procedures that
+
+// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers. For some reason that I don't fully understand, the two procedures give different results when applied to different examples, so I have specified the ambient space over which the result they output is correct
 
 function TjurinaP3(pt) // This function computes the Tjurina number of a singular point of a variety in P3
 boo,F,seq,dat := IsHypersurfaceSingularity(pt,3);
