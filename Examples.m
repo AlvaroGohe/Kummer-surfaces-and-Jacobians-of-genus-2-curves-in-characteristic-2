@@ -1,4 +1,4 @@
-// These are some examples of the application of the code "Functions.m". There is one example in characteristic 5, one supersingular, one almost ordinary and one ordinary in characteristic 2, and then the example over which we get everywhere good reduction
+// These are some examples of the application of the code "Functions.m". There is one example in characteristic 5, one in characteristic 0, three in characteristic 2: one ordinary, one almost ordinary and one supersingular, and then the example over which we get everywhere good reduction
 
 // We first load the file with the functions
 load "Functions.m";
@@ -13,7 +13,7 @@ J5 := Jacobian(C5);
 Kum5 := GeneralKummerSurface(J5);
 Jac5 := GeneralJacobianSurface(J5);
 
-// Example 1 in characteristic zero
+// Example in characteristic zero
 Q0<r> := ext<Rationals() | Polynomial([-1,-1,1])>;
 PolQ0<x> := PolynomialRing(Q0);
 f0 := -(20*r*x + 5*r^2*x - 20*x^2 - 39*r*x^2 - 7*r^2*x^2 + 34*x^3 + 24*r*x^3 + 2*r^2*x^3 - 17*x^4 - 6*r*x^4 + 4*x^5 + r*x^5);
@@ -25,47 +25,6 @@ Jac0 := GeneralJacobianSurface(J0);
 Des0 := DesingularisedKummer(J0);
 Ex0, Tr0, Des0 := Lines(J0, Des0);
 W0 := WeddleSurface(J0);
-
-// Example 2 in characteristic zero
-PolQA0<x> := PolynomialRing(Rationals());
-fA0 := 1 - 4*x + 2*x^2 - x^3 + x^4;
-gA0 := x*(x-1)^2;
-CA0 := HyperellipticCurve(fA0,gA0);
-JA0 := Jacobian(CA0);
-KumA0 := GeneralKummerSurface(JA0);
-JacA0 := GeneralJacobianSurface(JA0);
-DesA0 := DesingularisedKummer(JA0);
-ExA0, TrA0, DesA0 := Lines(JA0, DesA0);
-WA0 := WeddleSurface(JA0);
-
-// Example of a supersingular genus 2 curve in characteristic 2
-QSS<r> := GF(4);
-PolQSS<x> := PolynomialRing(QSS);
-fSS := x^6+x+1;
-gSS := x^3;
-CSS := HyperellipticCurve(fSS,gSS);
-JSS := Jacobian(CSS);
-KumSS := GeneralKummerSurface(JSS);
-JacSS := GeneralJacobianSurface(JSS);
-DesSS := DesingularisedKummer(JSS);
-ExSS, TrSS, DesSS := Lines(JSS, DesSS);
-WSS := WeddleSurface(JSS);
-
-// Example of an almost ordinary genus 2 curve in characteristic 2
-QAO<r> := GF(2);
-PolQAO<x> := PolynomialRing(QAO);
-fAO := x^6+x^5+1;
-gAO := x*(x-1)^2;
-CAO := HyperellipticCurve(fAO,gAO);
-JAO := Jacobian(CAO);
-KumAO := GeneralKummerSurface(JAO);
-JacAO := GeneralJacobianSurface(JAO);
-DesAO := DesingularisedKummer(JAO);
-ExAO, TrAO, plAO := Lines(JAO, DesAO);
-WAO := WeddleSurface(JAO);
-phiAO := WeddleQuotient(JAO, DesAO, WAO);
-WsptsAO := SingularPoints(WAO);
-[TjurinaP3(pt): pt in WsptsAO];
 
 // Example of an ordinary genus 2 curve in characteristic 2. This can be found by specialising the characteristic zero example
 QO<r> := GF(4);
@@ -84,17 +43,34 @@ WsptsO := SingularPoints(WO);
 Factorisation(gO);
 [TjurinaP3(pt): pt in WsptsO];
 
+// Example of an almost ordinary genus 2 curve in characteristic 2
+QAO<r> := GF(2);
+PolQAO<x> := PolynomialRing(QAO);
+fAO := x^6+x^5+1;
+gAO := x*(x-1)^2;
+CAO := HyperellipticCurve(fAO,gAO);
+JAO := Jacobian(CAO);
+KumAO := GeneralKummerSurface(JAO);
+JacAO := GeneralJacobianSurface(JAO);
+DesAO := DesingularisedKummer(JAO);
+ExAO, TrAO, plAO := Lines(JAO, DesAO);
+WAO := WeddleSurface(JAO);
+phiAO := WeddleQuotient(JAO, DesAO, WAO);
+WsptsAO := SingularPoints(WAO);
+[TjurinaP3(pt): pt in WsptsAO];
 
-// A second example of an ordinary genus 2 curve in characteristic 2
-QO2<r> := GF(4);
-PolQO2<x> := PolynomialRing(QO2);
-fO2 := x^6+x^5+1;
-gO2 := x*(x^2+x+1);
-CO2 := HyperellipticCurve(fO2,gO2);
-JO2 := Jacobian(CO2);
-KumO2 := GeneralKummerSurface(JO2);
-JacO2 := GeneralJacobianSurface(JO2);
-DesO2 := DesingularisedKummer(JO2);
+// Example of a supersingular genus 2 curve in characteristic 2
+QSS<r> := GF(4);
+PolQSS<x> := PolynomialRing(QSS);
+fSS := x^6+x+1;
+gSS := x^3;
+CSS := HyperellipticCurve(fSS,gSS);
+JSS := Jacobian(CSS);
+KumSS := GeneralKummerSurface(JSS);
+JacSS := GeneralJacobianSurface(JSS);
+DesSS := DesingularisedKummer(JSS);
+ExSS, TrSS, DesSS := Lines(JSS, DesSS);
+WSS := WeddleSurface(JSS);
 
 // The example whose associated Kummer have everywhere good reduction
 PolQ<x> := PolynomialRing(Rationals());
