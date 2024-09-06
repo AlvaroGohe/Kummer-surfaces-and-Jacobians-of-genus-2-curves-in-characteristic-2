@@ -1,4 +1,6 @@
 // These are some computations regarding examples of abelian surfaces with everywhere good reduction to check whether there Kummer surfaces acquire good reduction at 2.
+// If you find any bug or mistake, or if you have any question, please don't hesitate in contacting me :)
+// email: alvaro.gohe@gmail.com
 
 // The main example of the paper:
 K := pAdicField(2,32);
