@@ -12,13 +12,13 @@
 // This function takes any hyperelliptic genus 2 curve and transforms it into one of the form y^2+g(x)y=f(x) with deg(g)=3.
 function GenusTwoModel(C)
  k := BaseRing(C);
- K<x> := PolynomialRing(k);
- if Type(k) eq FldRat then
-  Cint := ReducedMinimalWeierstrassModel(C);
-  f,g := HyperellipticPolynomials(Cint);
-  else
+ K<x> := PolynomialRing(k); // Originally I had this line in the code, but I had changed it, since sometimes it changed the model of very perfectly valid curves into worse models
+ // if Type(k) eq FldRat then 
+  // Cint := ReducedMinimalWeierstrassModel(C);
+  // f,g := HyperellipticPolynomials(Cint);
+  // else 
   f,g := HyperellipticPolynomials(C);
- end if;
+ // end if;
  f0 := Coefficient(f,0);
  f1 := Coefficient(f,1);
  f2 := Coefficient(f,2);
@@ -736,7 +736,7 @@ end function;
 
 // In characteristic 0, given a rational double point pt the following function returns the name of the type of singularity
 function ADEtype(pt)
-_,F := IsHypersurfaceSingularity(pt,3);
+_,F := IsHypersurfaceSingularity(pt,7);
 _,_,typ := NormalFormOfHypersurfaceSingularity(F);
 return typ;
 end function;
