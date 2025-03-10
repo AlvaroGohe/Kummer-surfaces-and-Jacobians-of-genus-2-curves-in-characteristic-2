@@ -741,7 +741,32 @@ _,_,typ := NormalFormOfHypersurfaceSingularity(F);
 return typ;
 end function;
 
-// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually guess what these singularities are from their Tjurina numbers. For some reason that I don't fully understand, the two procedures give different results when applied to different examples, so I have specified the ambient space over which the result they output is correct
+// In characteristic 2, MAGMA has serious issues to identify ADE singularities, so we usually either blow the singularities manually or we guess what these singularities are from their Tjurina numbers. 
+
+// This function takes a singular point of a variety and returns the intersection matrix of the exceptional divisor of the desingularisation
+function IntMatDes(pt)
+X := Scheme(pt);
+A,P := AffinePatch(X,pt);
+Q<[xx]> := Ambient(A);
+coords := Eltseq(P);
+P := Scheme(A,[xx[i]-coords[i]: i in [1..#coords]]);
+dsd := ResolveSingByBlowUp(A,P);
+return IntersectionMatrix(dsd);
+end function;
+
+// This function returns the desingularisation data of the singularity, which can be analysed later with Magma
+function DesInfo(pt)
+X := Scheme(pt);
+A,P := AffinePatch(X,pt);
+Q<[xx]> := Ambient(A);
+coords := Eltseq(P);
+P := Scheme(A,[xx[i]-coords[i]: i in [1..#coords]]);
+dsd := ResolveSingByBlowUp(A,P);
+S := Surface(Ambient(A),DefiningEquations(A));
+return dsd, S;
+end function;
+
+// For some reason that I don't fully understand, these two procedures to compute the Tjurina number of a surface give different results when applied to different examples, so I have specified the ambient space over which the result they output is correct.
 
 function TjurinaP3(pt) // This function computes the Tjurina number of a singular point of a variety in P3
 boo,F,seq,dat := IsHypersurfaceSingularity(pt,3);

@@ -139,7 +139,7 @@ P22 := BAO![0,0,0,0,1,1,1,1,1,1];
 IsSingular(P22); // It's singular
 
 // Example of a supersingular genus 2 curve in characteristic 2
-QSS<r> := GF(4);
+QSS<r> := GF(2,12);
 PolQSS<x> := PolynomialRing(QSS);
 fSS := x^6+x+1;
 gSS := x^3;
@@ -153,6 +153,7 @@ JacSS := GeneralJacobianSurface(JSS);
 DesSS := DesingularisedKummer(JSS);
 SptsDesSS := SingularPoints(DesSS); 
 #SptsDesSS; // There is one singular points
+IntMatDes(SptsDesSS[1]); // The intersection matrix of the singular point
 ExSS, TrSS, DesSS := Lines(JSS, DesSS);
 WSS := WeddleSurface(JSS);
 IrreducibleComponents(ReducedSubscheme(SingularSubscheme(WSS)))[1]; // The singular line of the Weddle
