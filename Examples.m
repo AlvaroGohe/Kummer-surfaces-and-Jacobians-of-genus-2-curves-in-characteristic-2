@@ -31,7 +31,7 @@ PtsJac5 := Points(Jac5);
 [MultiplicationByn(J5,pt,2): pt in PtsJac5]; // The result of multiplying all the points in the Jacobian by 2
 
 
-// Example in characteristic zero
+// Examples in characteristic zero
 Q0<r> := ext<Rationals() | Polynomial([-1,-1,1])>;
 PolQ0<x> := PolynomialRing(Q0);
 f0 := -(20*r*x + 5*r^2*x - 20*x^2 - 39*r*x^2 - 7*r^2*x^2 + 34*x^3 + 24*r*x^3 + 2*r^2*x^3 - 17*x^4 - 6*r*x^4 + 4*x^5 + r*x^5);
@@ -57,7 +57,49 @@ pi0 := WeddleQuotient(Des0, W0); // The quotient from Des0
 B0 := BlowupEO(Des0); // The blow-up of the line EO
 
 
+// Examples in characteristic zero with an unusual number of tropes
+// This is an example of a curve defined over the rationals such that f0+g0^2/4 decomposes in 3 quadrics with 4 tropes of type T_{ijk} defined over the rationals
+Q0 := Rationals();
+PolQ0<x> := PolynomialRing(Q0);
+f0 := (x^2-2)*(x^2-8)*(x^2-32)-x^6/4;
+g0 := x^3;
+C0 := HyperellipticCurve(f0,g0);
+J0 := Jacobian(C0);
+Factorisation(f0+g0^2/4);
+Des0 := DesingularisedKummer(J0);
+Ex0, Tr0, Des0 := Lines(J0, Des0); // The lines on the surface
+[IrreducibleComponents(tr): tr in Tr0[[7,8,12,14]]]; // We see that these four tropes are defined over the rationals 
 
+// This is an example of a curve defined over the rationals such that f0+g0^2/4 is irreducible and has Galois group C6, and therefore, it has a trope of type T_{ijk} defined over the rationals
+Q0 := Rationals();
+PolQ0<x> := PolynomialRing(Q0);
+f0 := (1 + 12*x + 36*x^2 + 2*x^3 - 15*x^4 + x^6)-x^6/4;
+g0 := x^3;
+C0 := HyperellipticCurve(f0,g0);
+J0 := Jacobian(C0);
+Factorisation(f0+g0^2/4);
+G := GaloisGroup(f0+g0^2/4);
+GroupName(G);
+Des0 := DesingularisedKummer(J0);
+Ex0, Tr0, Des0 := Lines(J0, Des0); 
+IrreducibleComponents(Tr0[16]); // We see that this trope is defined over the rationals 
+
+// This is an example of a curve defined over the rationals such that f0+g0^2/4 is irreducible and has Galois group S3, and therefore, it has a trope of type T_{ijk} defined over the rationals
+Q0 := Rationals();
+PolQ0<x> := PolynomialRing(Q0);
+f0 := (x^6-3*x^2+6)-x^6/4;
+g0 := x^3;
+C0 := HyperellipticCurve(f0,g0);
+J0 := Jacobian(C0);
+Factorisation(f0+g0^2/4);
+G := GaloisGroup(f0+g0^2/4);
+GroupName(G);
+Des0 := DesingularisedKummer(J0);
+Ex0, Tr0, Des0 := Lines(J0, Des0); 
+IrreducibleComponents(Tr0[11]); // We see that this trope is defined over the rationals 
+
+
+// Examples in characteristic two
 // Example of an ordinary genus 2 curve in characteristic 2. This can be found by specialising the characteristic zero example
 QO<r> := GF(4);
 PolQO<x> := PolynomialRing(QO);
@@ -159,6 +201,7 @@ WSS := WeddleSurface(JSS);
 IrreducibleComponents(ReducedSubscheme(SingularSubscheme(WSS)))[1]; // The singular line of the Weddle
 BSS, phiSS := BlowupEO(DesSS); // The blow-up of the line EO
 
+// Example with everywhere good reduction
 // The example whose associated Kummer have everywhere good reduction
 PolQ<x> := PolynomialRing(Rationals());
 QDK<w> := NumberField(x^2-x-88);
